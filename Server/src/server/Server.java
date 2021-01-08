@@ -5,7 +5,12 @@
  */
 package server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,19 +25,32 @@ public class Server {
     
     public Server() {
         try {
+            // Initializing the server socket
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
             while(true) {
-                Socket s1 = serverSocket.accept();
+                // Connecting to player 1
+                Socket firstPlayer = serverSocket.accept();
+                // Sending a notification to first client that he's the first player
+                new DataOutputStream(firstPlayer.getOutputStream()).writeInt(PLAYER1);
+
+                // Connecting to player 2
+                Socket secondPlayer = serverSocket.accept();
+                // Sending a notification that he's the second player
+                new DataOutputStream(secondPlayer.getOutputStream()).writeInt(PLAYER2);
                 
-                GameHandler gameHandler = new GameHandler(s1);
+                        
+                // Sending both players to the game handler
+                GameHandler gameHandler = new GameHandler(firstPlayer, secondPlayer);
+                Thread th = new Thread(gameHandler);
+                th.start();
             }
         } catch (IOException e) {
-            System.out.println("Server() constructor exception");
+            System.out.println("Couldn't connect to clients");
         }
     }
     
     public static void main(String args[]) {
-        System.out.println("Listening to port 1234");
+        System.out.println("Server is online");
         Server server = new Server();
     }
 }

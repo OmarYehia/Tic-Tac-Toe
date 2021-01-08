@@ -7,6 +7,7 @@ package tictactoe.Controllers;
 
 import java.io.PrintStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -26,9 +27,7 @@ public class MultiPlayerNameController {
     
     private String name;
     private MainMenuBase mainMenu;
-    private MultiplayerGameBase multiGame;
-    private DataInputStream inputStream;
-    private PrintStream printStream;
+    private MultiplayerGameBase multiGame;;
     private Socket s;
     
 
@@ -38,22 +37,22 @@ public class MultiPlayerNameController {
             Button confirmBtn,
             TextField playerName) {
         
-        try {
-            s = new Socket(InetAddress.getLocalHost(), 1234);
-            inputStream = new DataInputStream(s.getInputStream());
-            printStream = new PrintStream(s.getOutputStream());
-        } catch (IOException ex) {
-            //ex.printStackTrace();
-            
-            mainMenu = new MainMenuBase(primaryStage);
-            Scene scene = new Scene(mainMenu, 636, 596);
-            primaryStage.setScene(scene);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Failure connecting to server");
-            alert.setHeaderText("The server is currently down");
-            alert.setContentText("Please try again later");
-            alert.showAndWait();
-        }
+//        try {
+//            s = new Socket(InetAddress.getLocalHost(), 1234);
+//            inputStream = new DataInputStream(s.getInputStream());
+//            printStream = new DataOutputStream(s.getOutputStream());
+//        } catch (IOException ex) {
+//            //ex.printStackTrace();
+//            
+//            mainMenu = new MainMenuBase(primaryStage);
+//            Scene scene = new Scene(mainMenu, 636, 596);
+//            primaryStage.setScene(scene);
+//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("Failure connecting to server");
+//            alert.setHeaderText("The server is currently down");
+//            alert.setContentText("Please try again later");
+//            alert.showAndWait();
+//        }
         
         backBtn.setOnAction(e -> {
             mainMenu = new MainMenuBase(primaryStage);
@@ -63,8 +62,7 @@ public class MultiPlayerNameController {
         
         confirmBtn.setOnAction(e -> {
             name = playerName.getText();
-            printStream.println(name);
-            multiGame = new MultiplayerGameBase(primaryStage, name, s, inputStream, printStream);
+            multiGame = new MultiplayerGameBase(primaryStage, name, s);
             Scene scene = new Scene(multiGame, 636, 596);
             primaryStage.setScene(scene);
         });

@@ -1,6 +1,7 @@
 package tictactoe.Scenes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import javafx.scene.Cursor;
@@ -43,9 +44,7 @@ public class MultiplayerGameBase extends AnchorPane {
     public MultiplayerGameBase(
             Stage primaryStage,
             String name,
-            Socket s,
-            DataInputStream inputStream,
-            PrintStream printStream) {
+            Socket s) {
 
         rectangle = new Rectangle();
         gridPane = new GridPane();
@@ -196,6 +195,6 @@ public class MultiplayerGameBase extends AnchorPane {
                 turnLabel,
                 player1Score,
                 player2Score,
-                name, s, inputStream, printStream);
+                name, s);
     }
 }

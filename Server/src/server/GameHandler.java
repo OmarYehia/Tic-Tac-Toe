@@ -6,26 +6,32 @@
 package server;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Vector;
 
-public class GameHandler extends Thread {
-    private DataInputStream inputStream;
-    private PrintStream printStream;
-    private static Vector<GameHandler> games = new Vector<GameHandler>();
-    private static Vector<String> names = new Vector<String>();
+public class GameHandler implements Runnable {
     
-    public GameHandler(Socket s1) {
-        try {
-            System.out.println("Creating a game session");
-            inputStream = new DataInputStream(s1.getInputStream());
-            printStream = new PrintStream(s1.getOutputStream());
-            games.add(this);
-            start();
-        } catch (IOException ex) {
-            System.out.println("Server is down...");
+    private final int PLAYER1_WON = 1;
+    private final int PLAYER2_WON = 2;
+    private final int DRAW = 3;
+    private final int CONTINUE = 4;
+    
+    private final Socket firstPlayer;
+    private final Socket secondPlayer;
+    
+    private char[][] cell = new char[3][3];
+
+    
+    public GameHandler(Socket s1, Socket s2) {
+        firstPlayer = s1;
+        secondPlayer = s2;
+        
+        // Initializing virtual board cells with empty tokens
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++)  {
+                cell[i][j] = ' ';
+            }
         }
     }
     
@@ -33,47 +39,143 @@ public class GameHandler extends Thread {
     public void run() {
         while(true) {
             try {
-                String messageFromClient = inputStream.readLine();
-                System.out.println(messageFromClient);
-                if(messageFromClient.split("-").length == 1 && messageFromClient != null) {
-                    String name = messageFromClient;
-                    names.add(name);
-                } else {
-                    if(messageFromClient != null) {
-                        sendMove(messageFromClient);
-                    } else {
-                        System.out.println("Lost connection to client1 -- gameover");
-                        try {
-                            inputStream.close();
-                            printStream.close();
-                        } catch (IOException e) {
-                            System.out.println("Couldn't close streams");
-                        }
+                // Streams for first player
+                DataInputStream fromFirstPlayer = new DataInputStream(firstPlayer.getInputStream());
+                DataOutputStream toFirstPlayer = new DataOutputStream(firstPlayer.getOutputStream());
+                
+                // Streams for second player
+                DataInputStream fromSecondPlayer = new DataInputStream(secondPlayer.getInputStream());
+                DataOutputStream toSecondPlayer = new DataOutputStream(secondPlayer.getOutputStream());
+                
+                // Notify first player that someone joined the game
+                toFirstPlayer.writeInt(1);
+                
+                // Starting the game
+                while(true){
+                    int row = fromFirstPlayer.readInt();
+                    int col = fromFirstPlayer.readInt();
+                    cell[row][col] = 'X';
+                    
+                    // Checking if first player has won
+                    if(hasWon('X')) {
+                        toFirstPlayer.writeInt(PLAYER1_WON);
+                        toSecondPlayer.writeInt(PLAYER1_WON);
+                        sendMove(toSecondPlayer, row, col);
+                        break;
+                    } 
+                    /* Checking if the first is already full
+                       This is only checked for first player because only
+                       his last move could result in a draw
+                    */
+                    else if(isBoardFull()) {
+                        toFirstPlayer.writeInt(DRAW);
+                        toSecondPlayer.writeInt(DRAW);
+                        sendMove(toSecondPlayer, row, col);
                         break;
                     }
+                    /* Since first player didn't win or the board isn't full
+                       we notify other player that it's their turn to play
+                    */
+                    else {
+                        toSecondPlayer.writeInt(CONTINUE);
+                        sendMove(toSecondPlayer, row, col);
+                    }
+                    
+                    // Now we wait for the second player to make their move
+                    row = fromSecondPlayer.readInt();
+                    col = fromSecondPlayer.readInt();
+                    cell[row][col] = 'O';
+                    
+                    /* Like the first player we check if second player won with
+                       the move they just made
+                    */
+                    if(hasWon('O')) {
+                        toFirstPlayer.writeInt(PLAYER2_WON);
+                        toSecondPlayer.writeInt(PLAYER2_WON);
+                        sendMove(toFirstPlayer, row, col);
+                        break;
+                    }
+                    /* If player 2 didn't win we notify first player that it's
+                       now their turn to play
+                    */
+                    else {
+                        toFirstPlayer.writeInt(CONTINUE);
+                        sendMove(toFirstPlayer, row, col);
+                    }
+                
                 }
             } catch (IOException e) {
-                System.out.println("Lost connection to client2");
-                games.remove(this);
-                break;
+                System.out.println("Lost connection to players");
+                e.printStackTrace();
             }
         }
     }
     
-    private void sendMove(String s) {
-//        games.forEach(client -> {
-//            client.printStream.println(client.name + "-" + s);          
-//        });
-        String[] ar = new String[2];
-        names.toArray(ar);
-        System.out.println(ar);
-        System.out.println(ar[0]);
-        System.out.println(ar[1]);
-         if(ar[0] != null && ar[1] != null) {
-            games.forEach(client -> {
-                System.out.println("here");
-                client.printStream.println(ar[0] +"-"+ar[1] + "-" + s + "-" + ar[0]);          
-            });
+    /**
+    * Sends the coordinates of the move to a selected player
+    * The combination between row and column is the other player 
+    * selected cell
+    * 
+    * @param toPlayer the DataOutputStream object for the selected player
+    * @param row an integer indicating the row
+    * @param col and integer indicating the column
+    * @exception It throws IOException if it couldn't send move to a client
+    * but it's handled on the spot rather than propagating to the calling function
+    * @return nothing
+    */
+    private void sendMove(DataOutputStream toPlayer, int row, int col) {
+        try {
+            toPlayer.writeInt(row);
+            toPlayer.writeInt(col);
+        } catch (IOException e) {
+            System.out.println("Lost connection to player");
         }
     }
+    
+    /**
+    * Checks whether the board is full or not after a player made their move
+    * Takes no arguments
+    * @return true if the board is full or false if the board is not full
+    */
+    
+    private boolean isBoardFull() {
+    for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if (cell[i][j] == ' '){
+                    return false;}
+            }
+        }
+        return true;
+    }
+    
+    /**
+    * Checks whether the play the user just made would declare him a winner
+    * @param token is a character 'X' or 'O' to check the virtual board state
+    * @return true if that token made a winning move or false if not
+    */
+    private boolean hasWon(char token) {
+        // Checking coloumns
+        for(int i = 0; i < 3; i++) {
+            if ((cell[i][0] == token) && (cell[i][1] == token) && (cell[i][2] == token)) {
+                return true;
+            }
+        }
+        // Checking rows
+        for(int i = 0; i < 3; i++) {
+            if ((cell[0][i] == token) && (cell[1][i] == token) && (cell[2][i] == token)) {
+                return true;
+            }
+        }
+        // Checking first diagonal
+        if ((cell[0][0] == token) && (cell[1][1] == token) && (cell[2][2] == token)) {
+            return true;
+        }
+        // Checking second diagonal
+        if ((cell[0][2] == token) && (cell[1][1] == token) && (cell[2][0] == token)) {
+            return true;
+        }
+        return false;
+    }
 }
+    
+

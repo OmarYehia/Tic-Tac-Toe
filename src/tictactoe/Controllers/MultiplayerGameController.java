@@ -6,9 +6,11 @@
 package tictactoe.Controllers;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import static java.lang.Integer.parseInt;
+import java.net.InetAddress;
 import java.net.Socket;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -32,7 +34,14 @@ import tictactoe.Scenes.MainMenuBase;
  */
 public class MultiplayerGameController implements Runnable {
     
-    private Cell[][] cells;
+    private final int PORT_NUMBER = 1234;
+    private final int PLAYER1 = 1;
+    private final int PLAYER2 = 2;
+    private final int PLAYER1_WON = 1;
+    private final int PLAYER2_WON = 2;
+    private final int DRAW = 3;
+    private final int CONTINUE = 4;
+    
     private String currentPlayer;
     private Stage stage;
     private final Button mainMenuBtn;
@@ -40,20 +49,37 @@ public class MultiplayerGameController implements Runnable {
     private final Label playerName1;
     private final Label playerName2;
     private final Label turnLabel;
-    private String name1;
-    private String name2;
     private final GridPane gridPane;
     private Label player1Score;
     private Label player2Score;
     private int score1 = 0;
     private int score2 = 0;
     private MainMenuBase mainMenuBase;
-    private DataInputStream inputStream;
     private Socket s;
-    private PrintStream printStream;
     private Thread th;
     
-    private int clientNum;
+    Socket socket;
+    private boolean myTurn = false;
+    private String myName;
+    private String otherName;
+    private char myToken = ' ', otherToken = ' ';
+    private Cell[][] cell = new Cell[3][3];
+    
+    // Moves
+    private int rowSent;
+    private int columnSent;
+
+    // Streams
+    private DataOutputStream toServer;
+    private DataInputStream fromServer;
+    
+    private boolean continueToPlay = true;
+    private boolean waiting = true;
+    
+    private int myNum;
+
+    
+    
         
     
     public MultiplayerGameController(
@@ -67,40 +93,34 @@ public class MultiplayerGameController implements Runnable {
             Label player1Score,
             Label player2Score,
             String name1,
-            Socket s,
-            DataInputStream inputStream,
-            PrintStream printStream) {
-        
-        // I still also need input and output streams and socket from the previous controller
-
+            Socket s) {
         
         mainMenuBtn = mainMenu;
         playAgainBtn = playAgain;
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
-        this.name1 = name1;
-        this.s = s;
-        this.printStream = printStream;
-        this.inputStream = inputStream;
-        
-        //this.name2 = null; // Recieve from the server, how IDK
-        
+        this.myName = name1;
+        this.s = s;      
         this.gridPane = gridPane;
         this.player1Score = player1Score;
         this.player2Score = player2Score;
         
-        currentPlayer = name1;
         
-        th = new Thread(this);
-        th.start();
-        // Inititializing labels and cells
-        updateScore();
-        labelInit();
-        cellsInit();
+        // Inititializing labels and cells /////////////////////////////////////////////////////////////////////////
+//        updateScore();
+//        labelInit();
+        
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                cell[i][j] = new Cell(i, j);
+                this.gridPane.add(cell[i][j], j, i);
+            }
+        }
+        
         
         playAgainBtn.setOnAction(e -> {
-            cellsReset();
+//            cellsReset();
         });
         
         mainMenu.setOnAction(e -> {
@@ -115,259 +135,219 @@ public class MultiplayerGameController implements Runnable {
             primaryStage.setScene(scene);
         });
         
+        connectToServer();
+        
+    }
+    
+    private void connectToServer() {
+        try {
+            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
+            fromServer = new DataInputStream(socket.getInputStream());
+            toServer = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            System.out.println("Server is currently unavailable");
+        }
+        
+        Thread th = new Thread(this);
+        th.start();
     }
 
     @Override
     public void run(){
-        while (true) {
-            try {
-                System.out.println("oooooooo");
-                String message = inputStream.readLine();
-                System.out.println("Message recieved from server = " + message);
+        try {
+            // Recieving which player I am from the server
+            int player = fromServer.readInt();
 
-                String[] ar = message.split("-");
-                if(name1.equals(ar[0])) {
-                    name2 = ar[1];
-                    clientNum = 1;
-                } else {
-                    name1 = ar[0];
-                    name2 = ar[1];
-                    clientNum = 2;
-                    player2Score = player1Score;
-                }
-                int i = parseInt(ar[2]);
-                int j = parseInt(ar[3]);
-                currentPlayer = ar[4];
-                if(!ar[2].equals("8")) {
-                    cells[i][j].setPlayer(currentPlayer);
-                }
-                ////////////////////////////
-                if (hasWon(currentPlayer)) {
-                    Platform.runLater(() ->{
-                        turnLabel.setText(currentPlayer + " WON!");
-//                        try {
-//                            s.close();
-//                        } catch (IOException e) {
-//                            System.out.println("couldn't close socket");
-//                        }
-                    });
-                    //printStream.println("8-8-" + currentPlayer);
-                    currentPlayer = null;
-                }
-                else if (isBoardFull()){
-                    currentPlayer = null;
-                    //printStream.println("8-8-" + currentPlayer);
-                    Platform.runLater(()-> {
-                        turnLabel.setText("It's a draw!");
-//                        try {
-//                            s.close();
-//                        } catch (IOException e) {
-//                            System.out.println("couldn't close socket");
-//                        }
-                    });
+            if(player == PLAYER1) {
+                myTurn = true;
+                myToken = 'X';
+                otherToken = 'O';
+                System.out.println("1");
+                fromServer.readInt();
+                System.out.println("2");
 
-                } else {
-                    currentPlayer = (currentPlayer.equals(name1))? name2: name1;
+
+                // Do something to UI   ////// TODO
+            }
+            else if (player == PLAYER2) {
+                myToken = 'O';
+                otherToken = 'X';
+               // Do something to UI   /////// TODO
+            }
+            
+            // Game start
+            while(continueToPlay)   {
+                if(player == PLAYER1) {
+                                    System.out.println("3");
+
+                    waitForAction();
+                                    System.out.println("4");
+
+                    sendMove();
+                                    System.out.println("5");
+
+                    recieveStatus();
+                                    System.out.println("6");
+
                 }
-                /////////////////////////////
-                System.out.println(name2);
-            for(int k = 0; k < 3; k++) {
-                for(int l = 0; l < 3; l++) {
-                    System.out.println(cells[k][l].player);
-                    
+                else if (player == PLAYER2) {
+                    recieveStatus();
+                    waitForAction();
+                    sendMove();
                 }
             }
+            
+        } catch (IOException e) {
+            System.out.println("Lost connection to server");
+        }
+    }
+    
+    private void waitForAction() {
+        try {
+            while(waiting) {
+                Thread.sleep(100);
+            }
+            waiting = true;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void sendMove() {
+        try {
+            toServer.writeInt(rowSent);
+            toServer.writeInt(columnSent);
+        } catch (IOException e) {
+            System.out.println("Lost connection to server");
+        }
+    }
+    
+    private void recieveStatus() {
+        try {
+            int status = fromServer.readInt();
+            
+            if(status == PLAYER1_WON) {
+                continueToPlay = false;
+                if(myToken == 'X') {
+                    // Do something in UI indicating I won
+                } 
+                else if (myToken == 'O') {
+                    // Do something in UI indication loss
+                    recieveMove();
+                }
+            }
+            
+            else if (status == PLAYER2_WON) {
+                continueToPlay = false;
+                if (myToken == 'X') {
+                    // Do something indicating loss
+                    recieveMove();
+                }
+                else if(myToken == 'O') {
+                    // Do something indicating win
+                }
+            }
+            
+            else if (status == DRAW) {
+                continueToPlay = false;
+                // Do something in UI indicating draw
                 
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Lost connection to server");
-                try{
-                    inputStream.close();
-                    printStream.close();
-                    s.close();
-                    break;
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                if (myToken == 'O') {
+                    recieveMove();
                 }
             }
+            
+            else {
+                recieveMove();
+                // Do something to indicate this is my turn
+                myTurn = true;
+            }
+        } catch (IOException e) {
+            System.out.println("Lost Connection to server");
         }
     }
     
-    public void labelInit() {
-        playerName1.setText("Player 1: " + name1);
-        playerName2.setText("Player 2");
- 
-    }
-    
-    public void cellsInit() {
-        cells = new Cell[3][3];
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                cells[i][j] = new Cell();
-                gridPane.add(cells[i][j], j, i);
-                cells[i][j].setI(i);
-                cells[i][j].setJ(j);
-            }
-        }
-    }
-    
-    public void updateScore() {
-        Platform.runLater(() -> {
-                player1Score.setText("Score: " + score1);
-                player2Score.setText("Score: " + score2);
-        });
-    }
-    
-    public void cellsReset() {
-        System.out.println("Resetcalled");
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                cells[i][j].resetPlayer();
-            }
+    private void recieveMove() {
+        try {
+            int row = fromServer.readInt();
+            int col = fromServer.readInt();
+            cell[row][col].setPlayer(otherToken);
+        } catch (IOException e) {
+            System.out.println("Lost connection to server");
         }
     }
     
     
     public class Cell extends Pane {
-        private String player = null;  
-        public int i;
-        public int j;
+        private char player = ' ';  
+        public int row;
+        public int col;
         private Line l1;
         private Line l2;
         private Ellipse oShape;
         
-        public Cell() {
-            this.setPrefSize(300, 300);
+        public Cell(int r, int c) {
+            row = r;
+            col = c;
+            //this.setPrefSize(300, 300);
             this.setOnMouseClicked(e -> handleClick());
         }
         
-        public String getPlayer() {
-            return player;
-        }
         
-        public void setI(int n) {
-            i = n;
-        }
-        
-        public void setJ(int n) {
-            j = n;
-        }
-        
-        public void setPlayer(String p) {
-            player = p;
+        public void setPlayer(char token) {
+            player = token;
 
-            if(player.equals(name1)) {
+            if(player == 'X') {
                 Platform.runLater(() -> {
-                l1 = new Line(10, this.getHeight() - 10, this.getWidth() - 10, 10);
-                l2 = new Line(10, 10, this.getWidth() - 10, this.getHeight() - 10);
-                getChildren().addAll(l1, l2);
-                turnLabel.setText(name2 +" turn");
+                    l1 = new Line(10, this.getHeight() - 10, this.getWidth() - 10, 10);
+                    l2 = new Line(10, 10, this.getWidth() - 10, this.getHeight() - 10);
+                    getChildren().addAll(l1, l2);
+                    //turnLabel.setText(myName +" turn");
                 });
                 
                 
-            } else if(player.equals(name2)) {
+            } else if(player == 'O') {
                 Platform.runLater(() -> {
-                Ellipse oShape = new Ellipse (this.getWidth() / 2, this.getHeight() / 2,
-                this.getWidth() / 2 - 10, this.getHeight() / 2 - 10);
-                oShape.setFill(null);
-                oShape.setStroke(Color.BLACK);
-                //printStream.println(i + " " + j + " " + player);
-                getChildren().add(oShape);
-                turnLabel.setText(name1 + " turn");
+                    Ellipse oShape = new Ellipse (this.getWidth() / 2, this.getHeight() / 2,
+                    this.getWidth() / 2 - 10, this.getHeight() / 2 - 10);
+                    oShape.setFill(null);
+                    oShape.setStroke(Color.BLACK);
+                    getChildren().add(oShape);
+                    //turnLabel.setText(otherName + " turn");
                 });
 
             }
         }
         
-        public void resetPlayer() {
-            System.out.println(name1);
-            System.out.println(name2);
-            if (player.equals(name1)) {
-                System.out.println("Resetplayercalled;");
-                player = null;
-                getChildren().removeAll(l1, l2);
-            }
-            if (player.equals(name2)) {
-                System.out.println("Resetplayercalled;");
-                player = null;
-                getChildren().removeAll(oShape);
-            }
-            currentPlayer = name1;
-        }
+//        public void resetPlayer() {
+//            System.out.println(name1);
+//            System.out.println(name2);
+//            if (player.equals(name1)) {
+//                System.out.println("Resetplayercalled;");
+//                player = null;
+//                getChildren().removeAll(l1, l2);
+//            }
+//            if (player.equals(name2)) {
+//                System.out.println("Resetplayercalled;");
+//                player = null;
+//                getChildren().removeAll(oShape);
+//            }
+//            currentPlayer = name1;
+//        }
         
         public void handleClick() {
-            if(player == null && currentPlayer != null) {
-                String message = String.valueOf(i) + "-" + String.valueOf(j) + "-" + currentPlayer;
-                System.out.println("Message sent to server = " + message);
-                printStream.println(message);
+            if(player == ' ' && myTurn) {
+                System.out.println("clicked");
+                setPlayer(myToken);
+                myTurn = false;
+                rowSent = row;
+                columnSent = col;
+                System.out.println("Move made. Waiting for other player to play");
+                waiting = false;
+
             }
         }
-    }
-    
-    public boolean isBoardFull() {
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                if (cells[i][j].getPlayer() == null){
-                    
-                    return false;}
-            }
-        }
-        return true;
-    }
-    
-    public boolean hasWon(String player) {
-        System.out.println("Checking hasWon");
-        for(int i = 0; i < 3; i++) {
-            if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
-                if(player.equals(name1)){
-                    score1++;
-                }
-                else {
-                    score2++;
-                }
-                updateScore();
-                return true;
-            }
-        }
-        
-        for(int i = 0; i < 3; i++) {
-            if (player.equals(cells[0][i].getPlayer()) && player.equals(cells[1][i].getPlayer()) && player.equals(cells[2][i].getPlayer())) {
-                if(player.equals(name1)){
-                    score1++;
-                }
-                else {
-                    score2++;
-                }
-                updateScore();
-                return true;
-            }
-        }
-        
-        if (player.equals(cells[0][0].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][2].getPlayer())) {
-            if(player.equals(name1)){
-                    score1++;
-                }
-            else {
-                score2++;
-            }
-            updateScore();
-            return true;
-        }
-        
-        if (player.equals(cells[0][2].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][0].getPlayer())) {
-            if(player.equals(name1)){
-                    score1++;
-                }
-            else {
-                score2++;
-            }
-            updateScore();
-            return true;
-        }
-        
-        return false;
-    }
-    
+    }    
 }
 
 
