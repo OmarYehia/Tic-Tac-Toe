@@ -1,5 +1,8 @@
 package tictactoe.Scenes;
 
+import java.io.DataInputStream;
+import java.io.PrintStream;
+import java.net.Socket;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,9 +15,9 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import tictactoe.Controllers.TwoPlayerGameController;
+import tictactoe.Controllers.MultiplayerGameController;
 
-public class TwoPlayerGameBase extends AnchorPane {
+public class MultiplayerGameBase extends AnchorPane {
 
     protected final Rectangle rectangle;
     protected final GridPane gridPane;
@@ -35,9 +38,14 @@ public class TwoPlayerGameBase extends AnchorPane {
     protected final Button playAgainBtn;
     protected final DropShadow dropShadow1;
     
-    private TwoPlayerGameController controller;
+    private MultiplayerGameController controller;
 
-    public TwoPlayerGameBase(Stage primaryStage, String name1, String name2) {
+    public MultiplayerGameBase(
+            Stage primaryStage,
+            String name,
+            Socket s,
+            DataInputStream inputStream,
+            PrintStream printStream) {
 
         rectangle = new Rectangle();
         gridPane = new GridPane();
@@ -178,7 +186,7 @@ public class TwoPlayerGameBase extends AnchorPane {
         getChildren().add(turnLabel);
         getChildren().add(playAgainBtn);
            
-        controller = new TwoPlayerGameController(
+        controller = new MultiplayerGameController(
                 primaryStage,
                 mainMeniBtn,
                 playAgainBtn,
@@ -188,6 +196,6 @@ public class TwoPlayerGameBase extends AnchorPane {
                 turnLabel,
                 player1Score,
                 player2Score,
-                name1, name2);
+                name, s, inputStream, printStream);
     }
 }

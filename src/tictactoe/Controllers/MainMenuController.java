@@ -8,9 +8,11 @@ package tictactoe.Controllers;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import tictactoe.Scenes.MultiplayerNameBase;
 import tictactoe.Scenes.TwoPlayersNamesBase;
 
 public class MainMenuController {
+    private MultiplayerNameBase multiplayerNameScene;
     private TwoPlayersNamesBase namesScene;
     
     public MainMenuController(Stage primaryStage,
@@ -36,6 +38,9 @@ public class MainMenuController {
         
         playFriendBtn.setOnAction(e -> {
             System.out.println("Button pressed");
+            multiplayerNameScene = new MultiplayerNameBase(primaryStage);
+            Scene scene = new Scene(multiplayerNameScene, 636, 596);
+            primaryStage.setScene(scene);
         });
         
         replayBtn.setOnAction(e -> {
