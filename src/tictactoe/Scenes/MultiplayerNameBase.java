@@ -88,6 +88,7 @@ public class MultiplayerNameBase extends StackPane {
         confirmBtn.setPrefWidth(154.0);
         confirmBtn.setText("Confirm");
         confirmBtn.setFont(new Font(20.0));
+        confirmBtn.setDefaultButton(true);
 
         dropShadow1.setColor(javafx.scene.paint.Color.valueOf("#857e7e96"));
         dropShadow1.setOffsetX(5.0);
@@ -110,6 +111,7 @@ public class MultiplayerNameBase extends StackPane {
         playerName.setPrefHeight(31.0);
         playerName.setPrefWidth(323.0);
         playerName.setPromptText("Please enter your username");
+        playerName.requestFocus();
 
         anchorPane.getChildren().add(rectangle);
         anchorPane.getChildren().add(imageView);

@@ -152,7 +152,7 @@ public class MultiplayerGameBase extends AnchorPane {
         turnLabel.setLayoutX(249.0);
         turnLabel.setLayoutY(505.0);
         turnLabel.setText("Player 1 turn");
-        turnLabel.setFont(new Font(27.0));
+        turnLabel.setFont(new Font(16.0));
 
         playAgainBtn.setLayoutX(487.0);
         playAgainBtn.setLayoutY(530.0);

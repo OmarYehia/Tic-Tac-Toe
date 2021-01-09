@@ -21,11 +21,15 @@ public class GameHandler implements Runnable {
     private final Socket secondPlayer;
     
     private char[][] cell = new char[3][3];
+    
+    Thread th;
 
     
     public GameHandler(Socket s1, Socket s2) {
         firstPlayer = s1;
         secondPlayer = s2;
+        th = new Thread(this);
+        th.start();
         
         // Initializing virtual board cells with empty tokens
         for(int i = 0; i < 3; i++) {

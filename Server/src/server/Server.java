@@ -41,8 +41,8 @@ public class Server {
                         
                 // Sending both players to the game handler
                 GameHandler gameHandler = new GameHandler(firstPlayer, secondPlayer);
-                Thread th = new Thread(gameHandler);
-                th.start();
+//                Thread th = new Thread(gameHandler);
+//                th.start();
             }
         } catch (IOException e) {
             System.out.println("Couldn't connect to clients");

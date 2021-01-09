@@ -41,7 +41,7 @@ public class TicTacToe extends Application {
         Image applicationIcon = new Image(getClass().getResource("Scenes/Logo.png").toExternalForm());
         primaryStage.getIcons().add(applicationIcon);
         primaryStage.setResizable(false);
-        primaryStage.setTitle("Test");
+        primaryStage.setTitle("Tic-Tac-Toe");
         primaryStage.setScene(scene);
         primaryStage.show();
 

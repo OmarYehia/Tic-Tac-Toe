@@ -8,8 +8,6 @@ package tictactoe.Controllers;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import static java.lang.Integer.parseInt;
 import java.net.InetAddress;
 import java.net.Socket;
 import javafx.animation.KeyFrame;
@@ -58,10 +56,10 @@ public class MultiplayerGameController implements Runnable {
     private Socket s;
     private Thread th;
     
-    Socket socket;
+    private Socket socket;
     private boolean myTurn = false;
-    private String myName;
-    private String otherName;
+//    private String myName;
+//    private String otherName;
     private char myToken = ' ', otherToken = ' ';
     private Cell[][] cell = new Cell[3][3];
     
@@ -76,12 +74,8 @@ public class MultiplayerGameController implements Runnable {
     private boolean continueToPlay = true;
     private boolean waiting = true;
     
-    private int myNum;
-
-    
-    
-        
-    
+    //private int myNum;
+  
     public MultiplayerGameController(
             Stage primaryStage,
             Button mainMenu,
@@ -100,16 +94,12 @@ public class MultiplayerGameController implements Runnable {
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
-        this.myName = name1;
+        //this.myName = name1;
         this.s = s;      
         this.gridPane = gridPane;
         this.player1Score = player1Score;
         this.player2Score = player2Score;
         
-        
-        // Inititializing labels and cells /////////////////////////////////////////////////////////////////////////
-//        updateScore();
-//        labelInit();
         
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
@@ -119,9 +109,19 @@ public class MultiplayerGameController implements Runnable {
         }
         
         
-        playAgainBtn.setOnAction(e -> {
-//            cellsReset();
-        });
+//        playAgainBtn.setOnAction(e -> {
+//            for(int i = 0; i < 3; i++) {
+//                for(int j = 0; j < 3; j++) {
+//                    cell[i][j].resetPlayer();
+//                }
+//            }
+//            try {
+//                socket.close();
+//                connectToServer();
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        });
         
         mainMenu.setOnAction(e -> {
             mainMenuBase = new MainMenuBase(primaryStage);
@@ -159,36 +159,40 @@ public class MultiplayerGameController implements Runnable {
             int player = fromServer.readInt();
 
             if(player == PLAYER1) {
-                myTurn = true;
                 myToken = 'X';
                 otherToken = 'O';
-                System.out.println("1");
+                
+                // Changing the status of the turn label
+                Platform.runLater(() -> {
+                    turnLabel.setText("Waiting for other player to join");
+                });
+                
+                // Receiving a notification from the server that someone joined
                 fromServer.readInt();
-                System.out.println("2");
-
-
-                // Do something to UI   ////// TODO
+                
+                // Changing the status of the turn label
+                Platform.runLater(() -> {
+                    turnLabel.setText("It's your turn");
+                });
+                
+                myTurn = true;
             }
             else if (player == PLAYER2) {
                 myToken = 'O';
                 otherToken = 'X';
-               // Do something to UI   /////// TODO
+               
+                // Changing the status of the turn label
+                Platform.runLater(() -> {
+                    turnLabel.setText("Please wait for the other player to move");
+                });
             }
             
             // Game start
             while(continueToPlay)   {
                 if(player == PLAYER1) {
-                                    System.out.println("3");
-
-                    waitForAction();
-                                    System.out.println("4");
-
-                    sendMove();
-                                    System.out.println("5");
-
-                    recieveStatus();
-                                    System.out.println("6");
-
+                    waitForAction(); // Waiting to make a move
+                    sendMove(); // Sending the move to the server
+                    recieveStatus(); // Recieving board status from the server
                 }
                 else if (player == PLAYER2) {
                     recieveStatus();
@@ -202,6 +206,13 @@ public class MultiplayerGameController implements Runnable {
         }
     }
     
+    /**
+    * Puts the current thread into sleep whiling waiting for the player
+    * to make a move
+    * It also changes status to "waiting" after the thread activates
+    * @return nothing
+    * @exception throws an InterruptedException but is handled on the spot
+    */
     private void waitForAction() {
         try {
             while(waiting) {
@@ -213,6 +224,12 @@ public class MultiplayerGameController implements Runnable {
         }
     }
     
+    /**
+    * Sends the selected player row and column to the server
+    * @return nothing
+    * @exception throws an IOException but is handled on the spot
+    */
+    
     private void sendMove() {
         try {
             toServer.writeInt(rowSent);
@@ -222,6 +239,15 @@ public class MultiplayerGameController implements Runnable {
         }
     }
     
+    /**
+    * Receives the current board status from the virtual 
+    * board on the server side to declare win/lose/draw
+    * 
+    * If no win/lose/draw situation it switch gives the turn to 
+    * the other player
+    * @return nothing
+    * @exception throws an Interrupted exception but is handled on the spot
+    */
     private void recieveStatus() {
         try {
             int status = fromServer.readInt();
@@ -229,10 +255,18 @@ public class MultiplayerGameController implements Runnable {
             if(status == PLAYER1_WON) {
                 continueToPlay = false;
                 if(myToken == 'X') {
-                    // Do something in UI indicating I won
+                    // Do something in UI indicating I won ///////// TODO  ++++++ Still need to update scores
+                    // Changing the status of the turn label
+                    Platform.runLater(() -> {
+                        turnLabel.setText("CONGRATULATIONS YOU WON!");
+                    });
                 } 
                 else if (myToken == 'O') {
-                    // Do something in UI indication loss
+                    // Do something in UI indication loss ///////////// TODO
+                    // Changing the status of the turn label
+                    Platform.runLater(() -> {
+                        turnLabel.setText("You lost :(");
+                    });
                     recieveMove();
                 }
             }
@@ -241,16 +275,25 @@ public class MultiplayerGameController implements Runnable {
                 continueToPlay = false;
                 if (myToken == 'X') {
                     // Do something indicating loss
+                    Platform.runLater(() -> {
+                        turnLabel.setText("You lost :(");
+                    });
                     recieveMove();
                 }
                 else if(myToken == 'O') {
                     // Do something indicating win
+                    Platform.runLater(() -> {
+                        turnLabel.setText("CONGRATULATIONS YOU WON!");
+                    });
                 }
             }
             
             else if (status == DRAW) {
                 continueToPlay = false;
                 // Do something in UI indicating draw
+                Platform.runLater(() -> {
+                        turnLabel.setText("Its a draw");
+                });
                 
                 if (myToken == 'O') {
                     recieveMove();
@@ -260,6 +303,9 @@ public class MultiplayerGameController implements Runnable {
             else {
                 recieveMove();
                 // Do something to indicate this is my turn
+                Platform.runLater(() -> {
+                        turnLabel.setText("Your turn to play");
+                });
                 myTurn = true;
             }
         } catch (IOException e) {
@@ -302,49 +348,41 @@ public class MultiplayerGameController implements Runnable {
                     l1 = new Line(10, this.getHeight() - 10, this.getWidth() - 10, 10);
                     l2 = new Line(10, 10, this.getWidth() - 10, this.getHeight() - 10);
                     getChildren().addAll(l1, l2);
-                    //turnLabel.setText(myName +" turn");
                 });
                 
                 
             } else if(player == 'O') {
                 Platform.runLater(() -> {
-                    Ellipse oShape = new Ellipse (this.getWidth() / 2, this.getHeight() / 2,
+                    oShape = new Ellipse (this.getWidth() / 2, this.getHeight() / 2,
                     this.getWidth() / 2 - 10, this.getHeight() / 2 - 10);
                     oShape.setFill(null);
                     oShape.setStroke(Color.BLACK);
                     getChildren().add(oShape);
-                    //turnLabel.setText(otherName + " turn");
                 });
 
             }
         }
         
-//        public void resetPlayer() {
-//            System.out.println(name1);
-//            System.out.println(name2);
-//            if (player.equals(name1)) {
-//                System.out.println("Resetplayercalled;");
-//                player = null;
-//                getChildren().removeAll(l1, l2);
-//            }
-//            if (player.equals(name2)) {
-//                System.out.println("Resetplayercalled;");
-//                player = null;
-//                getChildren().removeAll(oShape);
-//            }
-//            currentPlayer = name1;
-//        }
+        public void resetPlayer() {
+            if (player == 'X') {
+                getChildren().removeAll(l1, l2);
+            }
+            if (player == 'O') {
+                getChildren().removeAll(oShape);
+            }
+            player = ' ';
+        }
         
         public void handleClick() {
             if(player == ' ' && myTurn) {
-                System.out.println("clicked");
+                Platform.runLater(() -> {
+                    turnLabel.setText("Wait for other player");
+                });
                 setPlayer(myToken);
                 myTurn = false;
                 rowSent = row;
                 columnSent = col;
-                System.out.println("Move made. Waiting for other player to play");
                 waiting = false;
-
             }
         }
     }    
