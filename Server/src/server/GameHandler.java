@@ -16,13 +16,19 @@ public class GameHandler implements Runnable {
     private final int PLAYER2_WON = 2;
     private final int DRAW = 3;
     private final int CONTINUE = 4;
+    private final int OTHER_PLAYER_DISCONNECTED = 5;
     
     private final Socket firstPlayer;
     private final Socket secondPlayer;
     
+    private DataOutputStream toSecondPlayer;
+    
+    
     private char[][] cell = new char[3][3];
     
     Thread th;
+    
+    private boolean connection = true;
 
     
     public GameHandler(Socket s1, Socket s2) {
@@ -41,7 +47,7 @@ public class GameHandler implements Runnable {
     
     @Override
     public void run() {
-        while(true) {
+        //while(connection) {
             try {
                 // Streams for first player
                 DataInputStream fromFirstPlayer = new DataInputStream(firstPlayer.getInputStream());
@@ -49,70 +55,95 @@ public class GameHandler implements Runnable {
                 
                 // Streams for second player
                 DataInputStream fromSecondPlayer = new DataInputStream(secondPlayer.getInputStream());
-                DataOutputStream toSecondPlayer = new DataOutputStream(secondPlayer.getOutputStream());
+                toSecondPlayer = new DataOutputStream(secondPlayer.getOutputStream());
                 
                 // Notify first player that someone joined the game
-                toFirstPlayer.writeInt(1);
+                //toFirstPlayer.writeInt(1);
                 
                 // Starting the game
-                while(true){
-                    int row = fromFirstPlayer.readInt();
-                    int col = fromFirstPlayer.readInt();
-                    cell[row][col] = 'X';
+                while(connection){
+                    try{
+                        
+                        int row = fromFirstPlayer.readInt();
+                        int col = fromFirstPlayer.readInt();
+
+                        cell[row][col] = 'X';
                     
-                    // Checking if first player has won
-                    if(hasWon('X')) {
-                        toFirstPlayer.writeInt(PLAYER1_WON);
-                        toSecondPlayer.writeInt(PLAYER1_WON);
-                        sendMove(toSecondPlayer, row, col);
-                        break;
-                    } 
-                    /* Checking if the first is already full
-                       This is only checked for first player because only
-                       his last move could result in a draw
-                    */
-                    else if(isBoardFull()) {
-                        toFirstPlayer.writeInt(DRAW);
-                        toSecondPlayer.writeInt(DRAW);
-                        sendMove(toSecondPlayer, row, col);
-                        break;
-                    }
-                    /* Since first player didn't win or the board isn't full
-                       we notify other player that it's their turn to play
-                    */
-                    else {
-                        toSecondPlayer.writeInt(CONTINUE);
-                        sendMove(toSecondPlayer, row, col);
+                        // Checking if first player has won
+                        if(hasWon('X')) {
+                            toFirstPlayer.writeInt(PLAYER1_WON);
+                            toSecondPlayer.writeInt(PLAYER1_WON);
+                            sendMove(toSecondPlayer, row, col);
+                            break;
+                        } 
+                        /* Checking if the first is already full
+                           This is only checked for first player because only
+                           his last move could result in a draw
+                        */
+                        else if(isBoardFull()) {
+                            toFirstPlayer.writeInt(DRAW);
+                            toSecondPlayer.writeInt(DRAW);
+                            sendMove(toSecondPlayer, row, col);
+                            break;
+                        }
+                        /* Since first player didn't win or the board isn't full
+                           we notify other player that it's their turn to play
+                        */
+                        else {
+                            try{
+                                toSecondPlayer.writeInt(CONTINUE);
+                            } catch (IOException p2) {
+                                System.out.println("Lost connection to second player");
+                                toFirstPlayer.writeInt(OTHER_PLAYER_DISCONNECTED);
+                            }
+                            sendMove(toSecondPlayer, row, col);
+                        }
+                    } catch (IOException player1) {
+                        System.out.println("Lost connection to first player");
+                        //toFirstPlayer.writeInt(OTHER_PLAYER_DISCONNECTED);
+                        toSecondPlayer.writeInt(OTHER_PLAYER_DISCONNECTED);
+                        connection = false;
                     }
                     
-                    // Now we wait for the second player to make their move
-                    row = fromSecondPlayer.readInt();
-                    col = fromSecondPlayer.readInt();
-                    cell[row][col] = 'O';
-                    
-                    /* Like the first player we check if second player won with
-                       the move they just made
-                    */
-                    if(hasWon('O')) {
-                        toFirstPlayer.writeInt(PLAYER2_WON);
-                        toSecondPlayer.writeInt(PLAYER2_WON);
-                        sendMove(toFirstPlayer, row, col);
-                        break;
+                    try{
+                        // Now we wait for the second player to make their move
+                        int row = fromSecondPlayer.readInt();
+                        int col = fromSecondPlayer.readInt();
+                        cell[row][col] = 'O';
+
+                        /* Like the first player we check if second player won with
+                           the move they just made
+                        */
+                        if(hasWon('O')) {
+                            toFirstPlayer.writeInt(PLAYER2_WON);
+                            toSecondPlayer.writeInt(PLAYER2_WON);
+                            sendMove(toFirstPlayer, row, col);
+                            break;
+                        }
+                        /* If player 2 didn't win we notify first player that it's
+                           now their turn to play
+                        */
+                        else {
+                            try {
+                                toFirstPlayer.writeInt(CONTINUE);
+                            } catch (IOException p2) {
+                                System.out.println("First player disconnected");
+                                toSecondPlayer.writeInt(OTHER_PLAYER_DISCONNECTED);
+                            }
+                            sendMove(toFirstPlayer, row, col);
+                        }
+                    } catch (IOException player2) {
+                        System.out.println("Lost connection to second player");
+                        toFirstPlayer.writeInt(OTHER_PLAYER_DISCONNECTED);
+                        connection = false;
                     }
-                    /* If player 2 didn't win we notify first player that it's
-                       now their turn to play
-                    */
-                    else {
-                        toFirstPlayer.writeInt(CONTINUE);
-                        sendMove(toFirstPlayer, row, col);
-                    }
-                
                 }
             } catch (IOException e) {
-                System.out.println("Lost connection to players");
-                e.printStackTrace();
+                System.out.println("Lost connection to players"); 
+                //break;
+                //e.printStackTrace();
             }
-        }
+        //}
     }
     
     /**

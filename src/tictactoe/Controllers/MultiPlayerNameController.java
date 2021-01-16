@@ -27,7 +27,7 @@ public class MultiPlayerNameController {
     
     private String name;
     private MainMenuBase mainMenu;
-    private MultiplayerGameBase multiGame;;
+    private MultiplayerGameBase multiGame;
     private Socket s;
     
 

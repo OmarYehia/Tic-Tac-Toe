@@ -10,12 +10,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Optional;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -23,8 +26,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
+import tictactoe.Scenes.MultiplayerGameBase;
 
 /**
  *
@@ -39,11 +44,10 @@ public class MultiplayerGameController implements Runnable {
     private final int PLAYER2_WON = 2;
     private final int DRAW = 3;
     private final int CONTINUE = 4;
+    private final int OTHER_PLAYER_DISCONNECTED = 5;
     
     private String currentPlayer;
     private Stage stage;
-    private final Button mainMenuBtn;
-    private final Button playAgainBtn;
     private final Label playerName1;
     private final Label playerName2;
     private final Label turnLabel;
@@ -58,8 +62,8 @@ public class MultiplayerGameController implements Runnable {
     
     private Socket socket;
     private boolean myTurn = false;
-//    private String myName;
-//    private String otherName;
+    private String myName;
+    private String otherName;
     private char myToken = ' ', otherToken = ' ';
     private Cell[][] cell = new Cell[3][3];
     
@@ -73,6 +77,8 @@ public class MultiplayerGameController implements Runnable {
     
     private boolean continueToPlay = true;
     private boolean waiting = true;
+    
+    
     
     //private int myNum;
   
@@ -89,16 +95,15 @@ public class MultiplayerGameController implements Runnable {
             String name1,
             Socket s) {
         
-        mainMenuBtn = mainMenu;
-        playAgainBtn = playAgain;
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
-        //this.myName = name1;
+        this.myName = name1;
         this.s = s;      
         this.gridPane = gridPane;
         this.player1Score = player1Score;
         this.player2Score = player2Score;
+        this.stage = primaryStage;
         
         
         for(int i = 0; i < 3; i++) {
@@ -109,31 +114,38 @@ public class MultiplayerGameController implements Runnable {
         }
         
         
-//        playAgainBtn.setOnAction(e -> {
-//            for(int i = 0; i < 3; i++) {
-//                for(int j = 0; j < 3; j++) {
-//                    cell[i][j].resetPlayer();
-//                }
-//            }
-//            try {
-//                socket.close();
-//                connectToServer();
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//        });
+        playAgain.setOnAction(e -> {
+            try {
+                socket.close();
+                MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName, s);
+                Scene scene = new Scene(multiGame, 636, 596);
+                primaryStage.setScene(scene);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
         
         mainMenu.setOnAction(e -> {
-            mainMenuBase = new MainMenuBase(primaryStage);
-            Scene scene = new Scene(mainMenuBase, 636, 596);
-            KeyFrame start = new KeyFrame(Duration.ZERO,
-                new KeyValue(mainMenuBase.opacityProperty(), 0));
-            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                    new KeyValue(mainMenuBase.opacityProperty(), 1));
-            Timeline fade = new Timeline(start, end);
-            fade.play();
-            primaryStage.setScene(scene);
+            try{
+                socket.close();
+                mainMenuBase = new MainMenuBase(primaryStage);
+                Scene scene = new Scene(mainMenuBase, 636, 596);
+                KeyFrame start = new KeyFrame(Duration.ZERO,
+                    new KeyValue(mainMenuBase.opacityProperty(), 0));
+                KeyFrame end = new KeyFrame(Duration.seconds(0.3),
+                        new KeyValue(mainMenuBase.opacityProperty(), 1));
+                Timeline fade = new Timeline(start, end);
+                fade.play();
+                primaryStage.setScene(scene);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
+        
+        primaryStage.setOnHidden(e -> {
+            System.exit(0);
+        });
+        
         
         connectToServer();
         
@@ -157,6 +169,21 @@ public class MultiplayerGameController implements Runnable {
         try {
             // Recieving which player I am from the server
             int player = fromServer.readInt();
+            
+            // Sending name to server
+            toServer.writeUTF(myName);
+            toServer.flush();
+            
+            Platform.runLater(() -> {
+                    turnLabel.setText("Waiting for other player to join");
+            });
+            
+            otherName = fromServer.readUTF();
+            
+            Platform.runLater(() -> {
+                    playerName1.setText(myName);
+                    playerName2.setText(otherName);
+            });
 
             if(player == PLAYER1) {
                 myToken = 'X';
@@ -164,15 +191,7 @@ public class MultiplayerGameController implements Runnable {
                 
                 // Changing the status of the turn label
                 Platform.runLater(() -> {
-                    turnLabel.setText("Waiting for other player to join");
-                });
-                
-                // Receiving a notification from the server that someone joined
-                fromServer.readInt();
-                
-                // Changing the status of the turn label
-                Platform.runLater(() -> {
-                    turnLabel.setText("It's your turn");
+                    turnLabel.setText(otherName + " joined. It's your turn");
                 });
                 
                 myTurn = true;
@@ -183,7 +202,7 @@ public class MultiplayerGameController implements Runnable {
                
                 // Changing the status of the turn label
                 Platform.runLater(() -> {
-                    turnLabel.setText("Please wait for the other player to move");
+                    turnLabel.setText("Please wait for " + otherName + " to move");
                 });
             }
             
@@ -203,7 +222,31 @@ public class MultiplayerGameController implements Runnable {
             
         } catch (IOException e) {
             System.out.println("Lost connection to server");
+            //Platform.runLater(() -> lostConnectionToServer());
         }
+    }
+    
+    private void lostConnectionToServer () {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Server is currently down");
+        alert.setHeaderText(null);
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.setContentText("There seems to be a problem with the server!");
+        ButtonType mainMenu = new ButtonType("Main Menu");
+        alert.getButtonTypes().setAll(mainMenu);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == mainMenu) {
+            mainMenuBase = new MainMenuBase(stage);
+            Scene scene = new Scene(mainMenuBase, 636, 596);
+            KeyFrame start = new KeyFrame(Duration.ZERO,
+                new KeyValue(mainMenuBase.opacityProperty(), 0));
+            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
+                    new KeyValue(mainMenuBase.opacityProperty(), 1));
+            Timeline fade = new Timeline(start, end);
+            fade.play();
+            stage.setScene(scene);
+            }
     }
     
     /**
@@ -236,6 +279,7 @@ public class MultiplayerGameController implements Runnable {
             toServer.writeInt(columnSent);
         } catch (IOException e) {
             System.out.println("Lost connection to server");
+            //Platform.runLater(() -> lostConnectionToServer());
         }
     }
     
@@ -300,6 +344,32 @@ public class MultiplayerGameController implements Runnable {
                 }
             }
             
+            else if (status == OTHER_PLAYER_DISCONNECTED) {
+                continueToPlay = false;
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Connection lost");
+                    alert.setHeaderText(null);
+                    alert.initStyle(StageStyle.UNDECORATED);
+                    alert.setContentText("The other player has left the game!");
+                    ButtonType mainMenu = new ButtonType("Main Menu");
+                    alert.getButtonTypes().setAll(mainMenu);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    
+                    if (result.get() == mainMenu) {
+                        mainMenuBase = new MainMenuBase(stage);
+                        Scene scene = new Scene(mainMenuBase, 636, 596);
+                        KeyFrame start = new KeyFrame(Duration.ZERO,
+                            new KeyValue(mainMenuBase.opacityProperty(), 0));
+                        KeyFrame end = new KeyFrame(Duration.seconds(0.3),
+                                new KeyValue(mainMenuBase.opacityProperty(), 1));
+                        Timeline fade = new Timeline(start, end);
+                        fade.play();
+                        stage.setScene(scene);
+                    }
+                });
+            }
+            
             else {
                 recieveMove();
                 // Do something to indicate this is my turn
@@ -310,6 +380,7 @@ public class MultiplayerGameController implements Runnable {
             }
         } catch (IOException e) {
             System.out.println("Lost Connection to server");
+            Platform.runLater(() -> lostConnectionToServer());
         }
     }
     
@@ -320,6 +391,7 @@ public class MultiplayerGameController implements Runnable {
             cell[row][col].setPlayer(otherToken);
         } catch (IOException e) {
             System.out.println("Lost connection to server");
+            Platform.runLater(() -> lostConnectionToServer());
         }
     }
     

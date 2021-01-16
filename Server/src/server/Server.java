@@ -32,20 +32,26 @@ public class Server {
                 Socket firstPlayer = serverSocket.accept();
                 // Sending a notification to first client that he's the first player
                 new DataOutputStream(firstPlayer.getOutputStream()).writeInt(PLAYER1);
+                String name1 = new DataInputStream(firstPlayer.getInputStream()).readUTF();
+                System.out.println(name1);
 
                 // Connecting to player 2
                 Socket secondPlayer = serverSocket.accept();
                 // Sending a notification that he's the second player
                 new DataOutputStream(secondPlayer.getOutputStream()).writeInt(PLAYER2);
+                String name2 = new DataInputStream(secondPlayer.getInputStream()).readUTF();
+                System.out.println(name2);
                 
+                new DataOutputStream(firstPlayer.getOutputStream()).writeUTF(name2);
+                firstPlayer.getOutputStream().flush();
+                new DataOutputStream(secondPlayer.getOutputStream()).writeUTF(name1);
+                secondPlayer.getOutputStream().flush();
                         
                 // Sending both players to the game handler
                 GameHandler gameHandler = new GameHandler(firstPlayer, secondPlayer);
-//                Thread th = new Thread(gameHandler);
-//                th.start();
             }
         } catch (IOException e) {
-            System.out.println("Couldn't connect to clients");
+            System.out.println("One of the clients disconnected");
         }
     }
     
