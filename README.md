@@ -9,3 +9,5 @@
 ## TODO make an animation interface/function for easier transitions
 
 ## TODO add sounds to the remaining scenes
+
+## TODO fix null players in DB
