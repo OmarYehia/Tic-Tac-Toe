@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import tictactoedb.TicTacToeDB;
 
 public class GameHandler implements Runnable {
     
@@ -20,8 +21,13 @@ public class GameHandler implements Runnable {
     
     private final Socket firstPlayer;
     private final Socket secondPlayer;
+    private final String firstPlayerName;
+    private final String secondPlayerName;
     
-    private DataOutputStream toSecondPlayer;
+    private int step;
+    private int[] rowArr;
+    private int[] colArr;
+    private String[] players;
     
     
     private char[][] cell = new char[3][3];
@@ -31,9 +37,17 @@ public class GameHandler implements Runnable {
     private boolean connection = true;
 
     
-    public GameHandler(Socket s1, Socket s2) {
+    public GameHandler(Socket s1, Socket s2, String name1, String name2) {
         firstPlayer = s1;
         secondPlayer = s2;
+        firstPlayerName = name1;
+        secondPlayerName = name2;
+        
+        step = 0;
+        rowArr = new int[9];
+        colArr = new int[9];
+        players = new String[9];
+        
         th = new Thread(this);
         th.start();
         
@@ -55,7 +69,7 @@ public class GameHandler implements Runnable {
                 
                 // Streams for second player
                 DataInputStream fromSecondPlayer = new DataInputStream(secondPlayer.getInputStream());
-                toSecondPlayer = new DataOutputStream(secondPlayer.getOutputStream());
+                DataOutputStream toSecondPlayer = new DataOutputStream(secondPlayer.getOutputStream());
                 
                 // Notify first player that someone joined the game
                 //toFirstPlayer.writeInt(1);
@@ -68,12 +82,19 @@ public class GameHandler implements Runnable {
                         int col = fromFirstPlayer.readInt();
 
                         cell[row][col] = 'X';
+                        rowArr[step] = row;
+                        colArr[step] = col;
+                        players[step] = new String(firstPlayerName);
+                        step++;
                     
                         // Checking if first player has won
                         if(hasWon('X')) {
                             toFirstPlayer.writeInt(PLAYER1_WON);
                             toSecondPlayer.writeInt(PLAYER1_WON);
                             sendMove(toSecondPlayer, row, col);
+                            
+                            new TicTacToeDB(rowArr, colArr, players, firstPlayerName);
+                            
                             break;
                         } 
                         /* Checking if the first is already full
@@ -84,6 +105,9 @@ public class GameHandler implements Runnable {
                             toFirstPlayer.writeInt(DRAW);
                             toSecondPlayer.writeInt(DRAW);
                             sendMove(toSecondPlayer, row, col);
+                            
+                            new TicTacToeDB(rowArr, colArr, players, "draw");
+                            
                             break;
                         }
                         /* Since first player didn't win or the board isn't full
@@ -109,7 +133,12 @@ public class GameHandler implements Runnable {
                         // Now we wait for the second player to make their move
                         int row = fromSecondPlayer.readInt();
                         int col = fromSecondPlayer.readInt();
+                        
                         cell[row][col] = 'O';
+                        rowArr[step] = row;
+                        colArr[step] = col;
+                        players[step] = new String(secondPlayerName);
+                        step++;
 
                         /* Like the first player we check if second player won with
                            the move they just made
@@ -118,6 +147,9 @@ public class GameHandler implements Runnable {
                             toFirstPlayer.writeInt(PLAYER2_WON);
                             toSecondPlayer.writeInt(PLAYER2_WON);
                             sendMove(toFirstPlayer, row, col);
+                            
+                            new TicTacToeDB(rowArr, colArr, players, secondPlayerName);
+                            
                             break;
                         }
                         /* If player 2 didn't win we notify first player that it's

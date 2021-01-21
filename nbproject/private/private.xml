@@ -3,10 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Scenes/MainMenuBase.java</file>
-            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Controllers/MultiPlayerNameController.java</file>
-            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Controllers/MultiplayerGameController.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Controllers/ReplayNameController.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoedb/TicTacToeDB.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Scenes/ReplayMenuBase.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Controllers/ReplayGameController.java</file>
             <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/TicTacToe.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Scenes/ReplayNameBase.java</file>
+            <file>file:/C:/Users/LENOVO/Desktop/Java%20refined%20final/src/tictactoe/Controllers/MainMenuController.java</file>
         </group>
     </open-files>
 </project-private>

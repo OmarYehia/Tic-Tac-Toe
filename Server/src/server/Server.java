@@ -48,7 +48,7 @@ public class Server {
                 secondPlayer.getOutputStream().flush();
                         
                 // Sending both players to the game handler
-                GameHandler gameHandler = new GameHandler(firstPlayer, secondPlayer);
+                GameHandler gameHandler = new GameHandler(firstPlayer, secondPlayer, name1, name2);
             }
         } catch (IOException e) {
             System.out.println("One of the clients disconnected");
