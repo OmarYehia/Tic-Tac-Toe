@@ -51,7 +51,7 @@ public class ReplayNameController {
         
         confirmBtn.setOnAction(e -> {
             name = playerName.getText();
-            if(db.checkPlayerExist(name) == 1) {
+            if(db.isExistingPlayer(name) == 1) {
                 replayMenu = new ReplayMenuBase(primaryStage, name);
                 Scene scene = new Scene(replayMenu, 636, 596);
                 clickSound.play();

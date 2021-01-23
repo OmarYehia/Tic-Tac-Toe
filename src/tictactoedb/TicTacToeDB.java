@@ -43,17 +43,10 @@ public class TicTacToeDB {
     //------------------------------------------------------------------------//
     //****Parametrized constructor****//
     public TicTacToeDB(int i[], int j[], String[] sentNames, String winner) {
-        System.out.println("****Entered parm constructor****");
         player1 = sentNames[0];
+        System.out.println("Plqyer 111111111     " + player1);
         player2 = sentNames[1];
-        System.out.println("****Old array****");
-        for (int y = 0; y < i.length; y++) {
-            System.out.println(i[y]);
-            System.out.println(j[y]);
-            System.out.println(sentNames[y]);
-        }
-        System.out.println("****winner: " + winner);
-        System.out.println("****Adjusting array****");
+        System.out.println("Plqyer 22222     " + player2);
         int y = 0;
         while (y < 9 && sentNames[y] != null) {
             row = new int[y + 1];
@@ -63,32 +56,26 @@ public class TicTacToeDB {
                 row[w] = i[w];
                 col[w] = j[w];
                 playerNames[w] = sentNames[w];
-                System.out.println("w: " + w);
             }
             y++;
-            System.out.println("****y: " + y);
-        }
-        System.out.println("****new array****");
-        for (y = 0; y < row.length; y++) {
-            System.out.println(row[y]);
-            System.out.println(col[y]);
-            System.out.println(playerNames[y]);
         }
 
         //****Add players****//
         addNewPlayer(player1);
         addNewPlayer(player2);
-
+        
+        System.out.println("Plqyer 22222     " + player2);
         //****Add new game****//        
-        if (player2.toLowerCase() == "computer") {
+        if (player2.toLowerCase().equals("computer")) {
+            System.out.println("Ifffffffffffffffffffffffffffffffffff");
             addNewGame(player1, winner);
         } else {
+            System.out.println("elseeeeeeeeeeeeee");
             addNewGame(player1, player2, winner);
         }
 
         //****Add game steps****//
         addGameSteps(row, col, playerNames);
-        System.out.println("****after adding game steps****");
     }
 
     //------------------------------------------------------------------------//
@@ -608,7 +595,7 @@ public class TicTacToeDB {
     //****Check if Player Exists****//
     public int checkPlayerExist(String name) {
         ResultSet rs = null;
-        openCon();
+        //openCon();
         try {
             pst = con.prepareStatement("select id from player where name = ? ");
             pst.setString(1, name);
@@ -616,18 +603,17 @@ public class TicTacToeDB {
             if (rs.next() == true) {
                 playerExistFlag = 1;
             } else {
+                playerExistFlag = 0;
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally{
-            if(playerExistFlag == 1){
                 try {
                     rs.close();
                 } catch (SQLException RSex) {
                     RSex.printStackTrace();
                 }
-            }
-            closeCon();
+            //closeCon();
         }
         return playerExistFlag;
     }
@@ -725,6 +711,32 @@ public class TicTacToeDB {
 //            closeCon();
         }
         return 0;
+    }
+    
+        public int isExistingPlayer(String name) {
+        ResultSet rs = null;
+        openCon();
+        try {
+            pst = con.prepareStatement("select id from player where name = ? ");
+            pst.setString(1, name);
+            rs = pst.executeQuery();
+            if (rs.next() == true) {
+                playerExistFlag = 1;
+            } else {
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally{
+            if(playerExistFlag == 1) {
+                try {
+                    rs.close();
+                } catch (SQLException RSex) {
+                    RSex.printStackTrace();
+                }
+            }
+            closeCon();
+        }
+        return playerExistFlag;
     }
 
     

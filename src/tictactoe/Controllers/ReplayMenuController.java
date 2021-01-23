@@ -49,13 +49,9 @@ public class ReplayMenuController {
             String[] items = listItems(name, opponents, dates);
             
             ObservableList<String> list = FXCollections.observableArrayList(items);
-            listView.setItems(list);
-        
+            listView.setItems(list);        
         
             clickSound = new MediaPlayer(new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
-        
-        
-        
         
         backBtn.setOnAction(e -> {
             replayName = new ReplayNameBase(primaryStage);
