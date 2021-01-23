@@ -2,7 +2,7 @@
 
 ## TODO write a well formatted README
 
-## TODO Implement the database into the two player local game
+## ~~TODO Implement the database into the two player local game~~
 
 ## TODO further enhance the server
 
