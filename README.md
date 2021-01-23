@@ -6,7 +6,7 @@
 
 ## TODO further enhance the server
 
-## ~~TODO make an animation interface/function for easier transitions
+## ~~TODO make an animation interface/function for easier transitions~~
 
 ## ~~TODO add sounds to the remaining scenes~~
 
