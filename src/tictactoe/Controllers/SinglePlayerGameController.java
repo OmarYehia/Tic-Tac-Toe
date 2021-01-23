@@ -483,7 +483,11 @@ public class SinglePlayerGameController {
     }
     
     public boolean hasWon(String player) {
-        final String winTile = "-fx-background-color: #adff2f; -fx-opacity: 0.7";
+        final String winTile = "-fx-background-color: #adff2f;"
+                + " -fx-opacity: 0.7;"
+                + " -fx-border-color: black;"
+                + " -fx-border-width: 1px;";
+        
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
                 cells[i][0].setStyle(winTile);
