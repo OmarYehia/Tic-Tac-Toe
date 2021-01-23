@@ -5,16 +5,14 @@
  */
 package tictactoe.Controllers;
 
-import java.io.PrintStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
+import helpers.AnimationHelper;
 import java.net.Socket;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import tictactoe.Scenes.MainMenuBase;
 import tictactoe.Scenes.MultiplayerGameBase;
@@ -29,6 +27,7 @@ public class MultiPlayerNameController {
     private MainMenuBase mainMenu;
     private MultiplayerGameBase multiGame;
     private Socket s;
+    private MediaPlayer clickSound;
     
 
     public MultiPlayerNameController(
@@ -37,26 +36,14 @@ public class MultiPlayerNameController {
             Button confirmBtn,
             TextField playerName) {
         
-//        try {
-//            s = new Socket(InetAddress.getLocalHost(), 1234);
-//            inputStream = new DataInputStream(s.getInputStream());
-//            printStream = new DataOutputStream(s.getOutputStream());
-//        } catch (IOException ex) {
-//            //ex.printStackTrace();
-//            
-//            mainMenu = new MainMenuBase(primaryStage);
-//            Scene scene = new Scene(mainMenu, 636, 596);
-//            primaryStage.setScene(scene);
-//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.setTitle("Failure connecting to server");
-//            alert.setHeaderText("The server is currently down");
-//            alert.setContentText("Please try again later");
-//            alert.showAndWait();
-//        }
+        clickSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
         
         backBtn.setOnAction(e -> {
             mainMenu = new MainMenuBase(primaryStage);
             Scene scene = new Scene(mainMenu, 636, 596);
+            AnimationHelper.fadeAnimate(mainMenu);
+            clickSound.play();
             primaryStage.setScene(scene);
         });
         
@@ -64,6 +51,8 @@ public class MultiPlayerNameController {
             name = playerName.getText();
             multiGame = new MultiplayerGameBase(primaryStage, name, s);
             Scene scene = new Scene(multiGame, 636, 596);
+            AnimationHelper.fadeAnimate(multiGame);
+            clickSound.play();
             primaryStage.setScene(scene);
         });
         

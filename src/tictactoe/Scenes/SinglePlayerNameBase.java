@@ -80,6 +80,7 @@ public class SinglePlayerNameBase extends StackPane {
         dropShadow0.setSpread(0.02);
         backBtn.setEffect(dropShadow0);
         backBtn.setCursor(Cursor.HAND);
+        backBtn.setCancelButton(true);
 
         confirmBtn.setLayoutX(394.0);
         confirmBtn.setLayoutY(422.0);
@@ -95,6 +96,7 @@ public class SinglePlayerNameBase extends StackPane {
         dropShadow1.setSpread(0.02);
         confirmBtn.setEffect(dropShadow1);
         confirmBtn.setCursor(Cursor.HAND);
+        confirmBtn.setDefaultButton(true);
 
         label.setLayoutX(255.0);
         label.setLayoutY(277.0);
@@ -112,11 +114,12 @@ public class SinglePlayerNameBase extends StackPane {
         player1Name.setPromptText("Please enter your username");
 
         anchorPane.getChildren().add(rectangle);
+        anchorPane.getChildren().add(player1Name);
         anchorPane.getChildren().add(imageView);
         anchorPane.getChildren().add(backBtn);
         anchorPane.getChildren().add(confirmBtn);
         anchorPane.getChildren().add(label);
-        anchorPane.getChildren().add(player1Name);
+        
         getChildren().add(anchorPane);
         controller = new SinglePlayerNameController(
                 primaryStage,

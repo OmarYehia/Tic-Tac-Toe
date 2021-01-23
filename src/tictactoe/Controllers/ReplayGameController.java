@@ -5,6 +5,7 @@
  */
 package tictactoe.Controllers;
 
+import helpers.AnimationHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -98,12 +99,13 @@ public class ReplayGameController implements Runnable{
         mainPlayer = name1;
         
         // Inititializing labels and cells
-//        updateScore();
         labelInit();
         cellsInit();
         
-        clickSound = new MediaPlayer(new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
-        gameOver = new MediaPlayer(new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
+        clickSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
+        gameOver = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
         
         playAgainBtn.setOnAction(e -> {
             th = new Thread(this);
@@ -114,12 +116,7 @@ public class ReplayGameController implements Runnable{
         mainMenu.setOnAction(e -> {
             mainMenuBase = new MainMenuBase(primaryStage);
             Scene scene = new Scene(mainMenuBase, 636, 596);
-            KeyFrame start = new KeyFrame(Duration.ZERO,
-                new KeyValue(mainMenuBase.opacityProperty(), 0));
-            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                    new KeyValue(mainMenuBase.opacityProperty(), 1));
-            Timeline fade = new Timeline(start, end);
-            fade.play();
+            AnimationHelper.fadeAnimate(mainMenuBase);
             clickSound.play();
             primaryStage.setScene(scene);
         });
@@ -276,23 +273,6 @@ public class ReplayGameController implements Runnable{
                 mainPlayer = name1;
             }
         }
-        
-//        public void handleClick() {
-//            if(player == null && mainPlayer != null) {;
-//                setPlayer(mainPlayer);
-//                if (hasWon(mainPlayer)) {
-//                    turnLabel.setText(mainPlayer + " won!");
-//                    mainPlayer = null;
-//                }
-//                else if (isBoardFull()){
-//                    mainPlayer = null;
-//                    turnLabel.setText("It's a draw!");
-//
-//                } else {
-//                    mainPlayer = (mainPlayer == name1)? name2: name1;
-//                }
-//            } 
-//        }
     }
     
     public boolean isBoardFull() {
@@ -307,16 +287,12 @@ public class ReplayGameController implements Runnable{
     }
     
     public boolean hasWon(String player) {
-        System.out.println("Checking hasWon");
+        final String winTile = "-fx-background-color: #adff2f; -fx-opacity: 0.7";
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
-                if(player.equals(name1)){
-                    score1++;
-                }
-                else {
-                    score2++;
-                }
-//                updateScore();
+                cells[i][0].setStyle(winTile);
+                cells[i][1].setStyle(winTile);
+                cells[i][2].setStyle(winTile);
                 gameOver.play();
                 return true;
             }
@@ -324,46 +300,32 @@ public class ReplayGameController implements Runnable{
         
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[0][i].getPlayer()) && player.equals(cells[1][i].getPlayer()) && player.equals(cells[2][i].getPlayer())) {
-                if(player.equals(name1)){
-                    score1++;
-                }
-                else {
-                    score2++;
-                }
-//                updateScore();
+                cells[0][i].setStyle(winTile);
+                cells[1][i].setStyle(winTile);
+                cells[2][i].setStyle(winTile);
                 gameOver.play();
                 return true;
             }
         }
         
         if (player.equals(cells[0][0].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][2].getPlayer())) {
-            if(player.equals(name1)){
-                    score1++;
-                }
-            else {
-                score2++;
-            }
-//            updateScore();
-
+            cells[0][0].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][2].setStyle(winTile);
             gameOver.play();
             return true;
         }
         
         if (player.equals(cells[0][2].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][0].getPlayer())) {
-            if(player.equals(name1)){
-                    score1++;
-                }
-            else {
-                score2++;
-            }
-//            updateScore();
+            cells[0][2].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][0].setStyle(winTile);
+            gameOver.play();    
             return true;
         }
         
         return false;
-
-    }
-    
+    } 
 }
 
 

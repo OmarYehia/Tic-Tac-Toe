@@ -5,9 +5,7 @@
  */
 package tictactoe.Controllers;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import helpers.AnimationHelper;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -23,6 +21,8 @@ import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
 import java.util.Random;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 /**
  *
@@ -53,6 +53,9 @@ public class SinglePlayerGameController {
     private String [] playerarr =  new String[9];
     private String difficulty;
     
+    private MediaPlayer clickSound;
+    private MediaPlayer gameOver;
+    
     public SinglePlayerGameController(Stage primaryStage,
             Button mainMeniBtn,
             Button playAgainBtn,
@@ -79,24 +82,26 @@ public class SinglePlayerGameController {
         this.difficulty = Difficulty;
         mainPlayer = name;
         
+        clickSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
+        gameOver = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
+        
         // Inititializing labels and cells
         updateScore();
         labelInit();
         cellsInit();
         
         playAgainBtn.setOnAction(e -> {
+            clickSound.play();
             cellsReset();
         });
         
         mainMeniBtn.setOnAction(e -> {
             mainMenuBase = new MainMenuBase(primaryStage);
             Scene scene = new Scene(mainMenuBase, 636, 596);
-            KeyFrame start = new KeyFrame(Duration.ZERO,
-                new KeyValue(mainMenuBase.opacityProperty(), 0));
-            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                    new KeyValue(mainMenuBase.opacityProperty(), 1));
-            Timeline fade = new Timeline(start, end);
-            fade.play();
+            AnimationHelper.fadeAnimate(mainMenuBase);
+            clickSound.play();
             primaryStage.setScene(scene);
         });
     
@@ -135,6 +140,7 @@ public class SinglePlayerGameController {
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 cells[i][j].resetPlayer();
+                cells[i][j].setStyle("");
             }
         }
         step = 0;
@@ -468,31 +474,49 @@ public class SinglePlayerGameController {
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 if (cells[i][j].getPlayer() == null ){
-                    // || cells[i][j].getPlayer() == ""
-                    return false;}
+                    return false;
+                }
             }
         }
+        gameOver.play();
         return true;
     }
     
     public boolean hasWon(String player) {
+        final String winTile = "-fx-background-color: #adff2f; -fx-opacity: 0.7";
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
+                cells[i][0].setStyle(winTile);
+                cells[i][1].setStyle(winTile);
+                cells[i][2].setStyle(winTile);
+                gameOver.play();
                 return true;
             }
         }
         
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[0][i].getPlayer()) && player.equals(cells[1][i].getPlayer()) && player.equals(cells[2][i].getPlayer())) {
+                cells[0][i].setStyle(winTile);
+                cells[1][i].setStyle(winTile);
+                cells[2][i].setStyle(winTile);
+                gameOver.play();
                 return true;
             }
         }
         
         if (player.equals(cells[0][0].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][2].getPlayer())) {
+            cells[0][0].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][2].setStyle(winTile);
+            gameOver.play();
             return true;
         }
         
         if (player.equals(cells[0][2].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][0].getPlayer())) {
+            cells[0][2].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][0].setStyle(winTile);
+            gameOver.play(); 
             return true;
         }
        

@@ -5,6 +5,7 @@
  */
 package tictactoe.Controllers;
 
+import helpers.AnimationHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -24,7 +25,7 @@ public class MainMenuController {
     private MultiplayerNameBase multiplayerNameScene;
     private TwoPlayersNamesBase namesScene;
     private ReplayNameBase replayNameScene;
-    private SinglePlayerLevelsBase singleplayer;
+    private SinglePlayerLevelsBase singlePlayerNameScene;
     
     
     private MediaPlayer mainMenuSound;
@@ -39,7 +40,8 @@ public class MainMenuController {
     {
         
         // Sound
-        mainMenuSound = new MediaPlayer(new Media(getClass().getResource("/sounds/13-super-machine.mp3").toExternalForm()));
+        mainMenuSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/13-super-machine.mp3").toExternalForm()));
         mainMenuSound.setOnEndOfMedia(new Runnable() {
             public void run() {
               mainMenuSound.seek(Duration.ZERO);
@@ -48,16 +50,19 @@ public class MainMenuController {
         mainMenuSound.play();
         mainMenuSound.setVolume(0);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), new KeyValue(mainMenuSound.volumeProperty(), 0.8)));
+        Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.seconds(3),
+                        new KeyValue(mainMenuSound.volumeProperty(), 0.8)));
         timeline.play(); 
         
-        clickSound = new MediaPlayer(new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
+        clickSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
         
         // Buttons
         singlePlayerBtn.setOnAction(e -> {
-            System.out.println("Button pressed");
-            singleplayer = new SinglePlayerLevelsBase(primaryStage);
-            Scene scene = new Scene(singleplayer, 636, 596);
+            singlePlayerNameScene = new SinglePlayerLevelsBase(primaryStage);
+            Scene scene = new Scene(singlePlayerNameScene, 636, 596);
+            AnimationHelper.fadeAnimate(singlePlayerNameScene);
             mainMenuSound.stop();
             clickSound.play();
             primaryStage.setScene(scene);
@@ -68,6 +73,7 @@ public class MainMenuController {
             System.out.println("Button pressed");
             namesScene = new TwoPlayersNamesBase(primaryStage);
             Scene scene = new Scene(namesScene, 636, 596);
+            AnimationHelper.fadeAnimate(namesScene);
             mainMenuSound.stop();
             clickSound.play();
             primaryStage.setScene(scene);
@@ -77,6 +83,7 @@ public class MainMenuController {
             System.out.println("Button pressed");
             multiplayerNameScene = new MultiplayerNameBase(primaryStage);
             Scene scene = new Scene(multiplayerNameScene, 636, 596);
+            AnimationHelper.fadeAnimate(multiplayerNameScene);
             mainMenuSound.stop();
             clickSound.play();
             primaryStage.setScene(scene);
@@ -86,6 +93,7 @@ public class MainMenuController {
             System.out.println("Button pressed");
             replayNameScene = new ReplayNameBase(primaryStage);
             Scene scene = new Scene(replayNameScene,636, 596);
+            AnimationHelper.fadeAnimate(replayNameScene);
             mainMenuSound.stop();
             clickSound.play();
             primaryStage.setScene(scene);

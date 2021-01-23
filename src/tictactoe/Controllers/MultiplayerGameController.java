@@ -5,15 +5,13 @@
  */
 package tictactoe.Controllers;
 
+import helpers.AnimationHelper;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Optional;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -22,6 +20,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -52,10 +52,6 @@ public class MultiplayerGameController implements Runnable {
     private final Label playerName2;
     private final Label turnLabel;
     private final GridPane gridPane;
-    private Label player1Score;
-    private Label player2Score;
-    private int score1 = 0;
-    private int score2 = 0;
     private MainMenuBase mainMenuBase;
     private Socket s;
     private Thread th;
@@ -77,6 +73,9 @@ public class MultiplayerGameController implements Runnable {
     
     private boolean continueToPlay = true;
     private boolean waiting = true;
+    
+    private MediaPlayer clickSound;
+    private MediaPlayer gameOver;
     
     
     
@@ -101,11 +100,14 @@ public class MultiplayerGameController implements Runnable {
         this.myName = name1;
         this.s = s;      
         this.gridPane = gridPane;
-        this.player1Score = player1Score;
-        this.player2Score = player2Score;
         this.stage = primaryStage;
         
+        clickSound = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
+        gameOver = new MediaPlayer(
+                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
         
+        // Intitializing the board
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 cell[i][j] = new Cell(i, j);
@@ -119,6 +121,8 @@ public class MultiplayerGameController implements Runnable {
                 socket.close();
                 MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName, s);
                 Scene scene = new Scene(multiGame, 636, 596);
+                AnimationHelper.fadeAnimate(multiGame);
+                clickSound.play();
                 primaryStage.setScene(scene);
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -130,12 +134,8 @@ public class MultiplayerGameController implements Runnable {
                 socket.close();
                 mainMenuBase = new MainMenuBase(primaryStage);
                 Scene scene = new Scene(mainMenuBase, 636, 596);
-                KeyFrame start = new KeyFrame(Duration.ZERO,
-                    new KeyValue(mainMenuBase.opacityProperty(), 0));
-                KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                        new KeyValue(mainMenuBase.opacityProperty(), 1));
-                Timeline fade = new Timeline(start, end);
-                fade.play();
+                AnimationHelper.fadeAnimate(mainMenuBase);
+                clickSound.play();
                 primaryStage.setScene(scene);
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -156,12 +156,11 @@ public class MultiplayerGameController implements Runnable {
             socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
             fromServer = new DataInputStream(socket.getInputStream());
             toServer = new DataOutputStream(socket.getOutputStream());
+            Thread th = new Thread(this);
+            th.start();
         } catch (IOException e) {
             System.out.println("Server is currently unavailable");
-        }
-        
-        Thread th = new Thread(this);
-        th.start();
+        }       
     }
 
     @Override
@@ -239,12 +238,8 @@ public class MultiplayerGameController implements Runnable {
         if (result.get() == mainMenu) {
             mainMenuBase = new MainMenuBase(stage);
             Scene scene = new Scene(mainMenuBase, 636, 596);
-            KeyFrame start = new KeyFrame(Duration.ZERO,
-                new KeyValue(mainMenuBase.opacityProperty(), 0));
-            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                    new KeyValue(mainMenuBase.opacityProperty(), 1));
-            Timeline fade = new Timeline(start, end);
-            fade.play();
+            AnimationHelper.fadeAnimate(mainMenuBase);
+            clickSound.play();
             stage.setScene(scene);
             }
     }
@@ -299,15 +294,12 @@ public class MultiplayerGameController implements Runnable {
             if(status == PLAYER1_WON) {
                 continueToPlay = false;
                 if(myToken == 'X') {
-                    // Do something in UI indicating I won ///////// TODO  ++++++ Still need to update scores
-                    // Changing the status of the turn label
                     Platform.runLater(() -> {
-                        turnLabel.setText("CONGRATULATIONS YOU WON!");
+                        turnLabel.setText("YOU WON!");
+                        gameOver.play();
                     });
                 } 
                 else if (myToken == 'O') {
-                    // Do something in UI indication loss ///////////// TODO
-                    // Changing the status of the turn label
                     Platform.runLater(() -> {
                         turnLabel.setText("You lost :(");
                     });
@@ -327,7 +319,8 @@ public class MultiplayerGameController implements Runnable {
                 else if(myToken == 'O') {
                     // Do something indicating win
                     Platform.runLater(() -> {
-                        turnLabel.setText("CONGRATULATIONS YOU WON!");
+                        turnLabel.setText("YOU WON!");
+                        gameOver.play();
                     });
                 }
             }
@@ -359,12 +352,8 @@ public class MultiplayerGameController implements Runnable {
                     if (result.get() == mainMenu) {
                         mainMenuBase = new MainMenuBase(stage);
                         Scene scene = new Scene(mainMenuBase, 636, 596);
-                        KeyFrame start = new KeyFrame(Duration.ZERO,
-                            new KeyValue(mainMenuBase.opacityProperty(), 0));
-                        KeyFrame end = new KeyFrame(Duration.seconds(0.3),
-                                new KeyValue(mainMenuBase.opacityProperty(), 1));
-                        Timeline fade = new Timeline(start, end);
-                        fade.play();
+                        AnimationHelper.fadeAnimate(mainMenuBase);
+                        clickSound.play();
                         stage.setScene(scene);
                     }
                 });

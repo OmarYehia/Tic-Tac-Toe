@@ -81,6 +81,7 @@ public class ReplayNameBase extends StackPane {
         dropShadow0.setSpread(0.02);
         backBtn.setEffect(dropShadow0);
         backBtn.setCursor(Cursor.HAND);
+        backBtn.setCancelButton(true);
 
         confirmBtn.setLayoutX(394.0);
         confirmBtn.setLayoutY(422.0);
@@ -115,11 +116,12 @@ public class ReplayNameBase extends StackPane {
         playerName.requestFocus();
 
         anchorPane.getChildren().add(rectangle);
+        anchorPane.getChildren().add(playerName);
         anchorPane.getChildren().add(imageView);
         anchorPane.getChildren().add(backBtn);
         anchorPane.getChildren().add(confirmBtn);
         anchorPane.getChildren().add(label);
-        anchorPane.getChildren().add(playerName);
+        
         getChildren().add(anchorPane);
         
         controller = new ReplayNameController(primaryStage, backBtn, confirmBtn, playerName);

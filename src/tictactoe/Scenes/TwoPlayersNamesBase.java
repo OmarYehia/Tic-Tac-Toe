@@ -77,6 +77,7 @@ public class TwoPlayersNamesBase extends StackPane {
         backBtn.setPrefWidth(154.0);
         backBtn.setText("Back");
         backBtn.setFont(new Font(20.0));
+        backBtn.setCancelButton(true);
 
         dropShadow0.setColor(javafx.scene.paint.Color.valueOf("#857e7e96"));
         dropShadow0.setOffsetX(5.0);
@@ -92,6 +93,7 @@ public class TwoPlayersNamesBase extends StackPane {
         confirmBtn.setPrefWidth(154.0);
         confirmBtn.setText("Confirm");
         confirmBtn.setFont(new Font(20.0));
+        confirmBtn.setDefaultButton(true);
 
         dropShadow1.setColor(javafx.scene.paint.Color.valueOf("#857e7e96"));
         dropShadow1.setOffsetX(5.0);
