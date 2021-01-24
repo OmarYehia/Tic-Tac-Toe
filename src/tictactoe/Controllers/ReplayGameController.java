@@ -24,7 +24,6 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import tictactoe.Scenes.MainMenuBase;
 import tictactoe.Scenes.ReplayMenuBase;
 
 /**
@@ -144,6 +143,7 @@ public class ReplayGameController implements Runnable{
         });
         
         backBtn.setOnAction(e -> {
+            th.stop();
             replayMenuBase = new ReplayMenuBase(primaryStage, name1);
             Scene scene = new Scene(replayMenuBase, 636, 596);
             winVideo.stop();
