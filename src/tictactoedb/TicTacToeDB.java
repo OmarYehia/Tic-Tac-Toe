@@ -79,7 +79,7 @@ public class TicTacToeDB {
         try {
             int playerID = getPlayerID(player_name);
             PreparedStatement getGamesID
-                    = con.prepareStatement("SELECT game_id FROM game WHERE player1_id = ?;");
+                    = con.prepareStatement("SELECT game_id FROM game WHERE player1_id = ? or player2_id = ?;");
             getGamesID.setInt(1,playerID);
             getGamesID.setInt(2,playerID);
             rs = getGamesID.executeQuery();
