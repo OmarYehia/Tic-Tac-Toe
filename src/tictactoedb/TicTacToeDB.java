@@ -5,6 +5,7 @@
  */
 package tictactoedb;
 
+import helpers.DatabaseHelper;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -597,7 +598,7 @@ public class TicTacToeDB {
     public void openCon() {
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/tictactoe", "root", "4994");
+            con = DriverManager.getConnection(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

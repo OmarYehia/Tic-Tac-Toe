@@ -6,15 +6,23 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
+import helpers.DatabaseHelper;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Optional;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import tictactoe.Scenes.MultiplayerNameBase;
 import tictactoe.Scenes.ReplayNameBase;
@@ -71,7 +79,6 @@ public class MainMenuController {
         });
         
         twoPlayersBtn.setOnAction(e -> {
-            System.out.println("Button pressed");
             namesScene = new TwoPlayersNamesBase(primaryStage);
             Scene scene = new Scene(namesScene, 636, 596);
             AnimationHelper.fadeAnimate(namesScene);
@@ -81,7 +88,6 @@ public class MainMenuController {
         });
         
         playFriendBtn.setOnAction(e -> {
-            System.out.println("Button pressed");
             multiplayerNameScene = new MultiplayerNameBase(primaryStage);
             Scene scene = new Scene(multiplayerNameScene, 636, 596);
             AnimationHelper.fadeAnimate(multiplayerNameScene);
@@ -91,17 +97,24 @@ public class MainMenuController {
         });
         
         replayBtn.setOnAction(e -> {
-            System.out.println("Button pressed");
-            replayNameScene = new ReplayNameBase(primaryStage);
-            Scene scene = new Scene(replayNameScene,636, 596);
-            AnimationHelper.fadeAnimate(replayNameScene);
-            mainMenuSound.stop();
-            clickSound.play();
-            primaryStage.setScene(scene);
+            if(isConnected(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword)){
+                replayNameScene = new ReplayNameBase(primaryStage);
+                Scene scene = new Scene(replayNameScene,636, 596);
+                AnimationHelper.fadeAnimate(replayNameScene);
+                mainMenuSound.stop();
+                clickSound.play();
+                primaryStage.setScene(scene);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Database failure");
+                alert.setHeaderText(null);
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.setContentText("Appearantly the database isn't connected. Please connect it and try again.");
+                Optional<ButtonType> result = alert.showAndWait();
+            }
         });
         
         soundBtn.setOnAction(e -> {
-            
             clickSound.play();
             if(soundBtn.isSelected()) {
                 mainMenuSound.stop();
@@ -115,7 +128,6 @@ public class MainMenuController {
         });
         
         quitBtn.setOnAction(e -> {
-            System.out.println("Button pressed");
             clickSound.play();
             System.exit(0);
         });
@@ -125,4 +137,16 @@ public class MainMenuController {
         });
         
     }
-}
+    
+    public boolean isConnected(String url, String username, String password){
+        boolean connected = false;
+        
+        try (Connection con = DriverManager.getConnection(url, username, password);){  
+            connected = true;
+        } catch (SQLException e) {
+            System.out.println("The database is not connected");
+        } finally {
+            return connected;
+        }  
+    }
+ }
