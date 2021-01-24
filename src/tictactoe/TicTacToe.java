@@ -32,10 +32,7 @@ public class TicTacToe extends Application {
         root.getChildren().add(menuScene);
         
         Scene scene = new Scene(root, 636, 596);
-        
 
-        
-     
         // Configurations of the stage
         Image applicationIcon = new Image(getClass().getResource("Scenes/Logo.png").toExternalForm());
         primaryStage.getIcons().add(applicationIcon);

@@ -7,9 +7,6 @@ package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
 import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +15,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
-import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
 import java.util.Random;
 import javafx.scene.media.Media;
@@ -55,6 +51,11 @@ public class SinglePlayerGameController {
     
     private MediaPlayer clickSound;
     private MediaPlayer gameOver;
+    
+    private final String winTile = "-fx-background-color: #adff2f;"
+                + " -fx-opacity: 0.7;"
+                + " -fx-border-color: black;"
+                + " -fx-border-width: 1px;";
     
     public SinglePlayerGameController(Stage primaryStage,
             Button mainMeniBtn,
@@ -302,8 +303,8 @@ public class SinglePlayerGameController {
                 }
             }
          }
-         cells[i][j].setPlayer(name2);
-         numsI[step] = i;
+        cells[i][j].setPlayer(name2);
+        numsI[step] = i;
         numsJ[step] = j;
         playerarr[step] =  new String(name2);
         step++;
@@ -338,9 +339,9 @@ public class SinglePlayerGameController {
             {
                 if(cells[l][k].getPlayer() == null )
                 {
-                     cells[l][k].setPlayer(name2);
+                    cells[l][k].setPlayer(name2);
                     score = miniMedium(cells,depth+1, false);
-                   cells[l][k].resetPlayer();
+                    cells[l][k].resetPlayer();
                     bestScore = Math.max(score, bestScore);
                 }
 
@@ -362,9 +363,9 @@ public class SinglePlayerGameController {
             {
                 if(cells[l][k].getPlayer() == null )
                 {
-                     cells[l][k].setPlayer(name1);
+                    cells[l][k].setPlayer(name1);
                     score = miniMedium(cells,depth+1, true);
-                   cells[l][k].resetPlayer();
+                    cells[l][k].resetPlayer();
                     bestScore = Math.min(score, bestScore);
                 }
             }
@@ -430,9 +431,9 @@ public class SinglePlayerGameController {
             {
                 if(cells[l][k].getPlayer() == null )
                 {
-                     cells[l][k].setPlayer(name2);
+                    cells[l][k].setPlayer(name2);
                     score = minimax(cells,depth+1, false);
-                   cells[l][k].resetPlayer();
+                    cells[l][k].resetPlayer();
                     bestScore = Math.max(score, bestScore);
                 }
 
@@ -454,9 +455,9 @@ public class SinglePlayerGameController {
             {
                 if(cells[l][k].getPlayer() == null )
                 {
-                     cells[l][k].setPlayer(name1);
+                    cells[l][k].setPlayer(name1);
                     score = minimax(cells,depth+1, true);
-                   cells[l][k].resetPlayer();
+                    cells[l][k].resetPlayer();
                     bestScore = Math.min(score, bestScore);
                 }
             }
@@ -483,10 +484,6 @@ public class SinglePlayerGameController {
     }
     
     public boolean hasWon(String player) {
-        final String winTile = "-fx-background-color: #adff2f;"
-                + " -fx-opacity: 0.7;"
-                + " -fx-border-color: black;"
-                + " -fx-border-width: 1px;";
         
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
