@@ -55,6 +55,7 @@ public class TwoPlayerGameController {
     private MediaView winView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
+    Timeline fade;
     
     private int step;
     private int[] rowArr;
@@ -118,6 +119,7 @@ public class TwoPlayerGameController {
             cellsReset();
             winVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, tieView);
         });
         
@@ -125,6 +127,7 @@ public class TwoPlayerGameController {
             mainMenuBase = new MainMenuBase(primaryStage);
             Scene scene = new Scene(mainMenuBase, 636, 596);winVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, tieView);        
             AnimationHelper.fadeAnimate(mainMenuBase);
             clickSound.play();
@@ -348,7 +351,7 @@ public class TwoPlayerGameController {
                 new KeyValue(videoPane.opacityProperty(), 1));
         KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
                 new KeyValue(videoPane.opacityProperty(), 0));
-        Timeline fade = new Timeline(start, end);
+        fade = new Timeline(start, end);
         fade.play();
     } 
     

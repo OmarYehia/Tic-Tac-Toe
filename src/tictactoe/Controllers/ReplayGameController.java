@@ -66,6 +66,7 @@ public class ReplayGameController implements Runnable{
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
+    Timeline fade;
     
     
     public ReplayGameController(
@@ -135,6 +136,7 @@ public class ReplayGameController implements Runnable{
             winVideo.stop();
             loseVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
             th.start();
         });
@@ -145,6 +147,7 @@ public class ReplayGameController implements Runnable{
             winVideo.stop();
             loseVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
             AnimationHelper.fadeAnimate(mainMenuBase);
             clickSound.play();
@@ -370,7 +373,7 @@ public class ReplayGameController implements Runnable{
                 new KeyValue(videoPane.opacityProperty(), 1));
         KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
                 new KeyValue(videoPane.opacityProperty(), 0));
-        Timeline fade = new Timeline(start, end);
+        fade = new Timeline(start, end);
         fade.play();
     } 
 }

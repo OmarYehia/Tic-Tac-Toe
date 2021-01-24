@@ -87,6 +87,7 @@ public class MultiplayerGameController implements Runnable {
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
+    Timeline fade;
   
     public MultiplayerGameController(
             Stage primaryStage,
@@ -149,6 +150,7 @@ public class MultiplayerGameController implements Runnable {
                 Scene scene = new Scene(multiGame, 636, 596);
                 winVideo.stop();
                 loseVideo.stop();
+                fade.stop();
                 tieVideo.stop();
                 videoPane.getChildren().removeAll(winView, loseView, tieView);
                 AnimationHelper.fadeAnimate(multiGame);
@@ -166,6 +168,7 @@ public class MultiplayerGameController implements Runnable {
                 Scene scene = new Scene(mainMenuBase, 636, 596);
                 winVideo.stop();
                 loseVideo.stop();
+                fade.stop();
                 tieVideo.stop();
                 videoPane.getChildren().removeAll(winView, loseView, tieView);
                 AnimationHelper.fadeAnimate(mainMenuBase);
@@ -333,6 +336,7 @@ public class MultiplayerGameController implements Runnable {
                         videoPane.getChildren().add(winView);
                         winVideo.play();
                         fadeAnimation(7);
+                        colorTiles();
                     });
                 } 
                 else if (myToken == 'O') {
@@ -341,6 +345,7 @@ public class MultiplayerGameController implements Runnable {
                         videoPane.getChildren().add(loseView);
                         loseVideo.play();
                         fadeAnimation(10);
+                        colorTiles();
                     });
                     recieveMove();
                 }
@@ -355,6 +360,7 @@ public class MultiplayerGameController implements Runnable {
                         videoPane.getChildren().add(loseView);
                         loseVideo.play();
                         fadeAnimation(10);
+                        colorTiles();
                     });
                     recieveMove();
                 }
@@ -365,6 +371,7 @@ public class MultiplayerGameController implements Runnable {
                         videoPane.getChildren().add(winView);
                         winVideo.play();
                         fadeAnimation(7);
+                        colorTiles();
                     });
                 }
             }
@@ -470,6 +477,10 @@ public class MultiplayerGameController implements Runnable {
             }
         }
         
+        public char getPlayer() {
+            return player;
+        }
+        
         public void resetPlayer() {
             if (player == 'X') {
                 getChildren().removeAll(l1, l2);
@@ -494,12 +505,50 @@ public class MultiplayerGameController implements Runnable {
         }
     }    
     
+    public void colorTiles() {
+        final String winTile = "-fx-background-color: #adff2f;"
+                + " -fx-opacity: 0.7;"
+                + " -fx-border-color: black;"
+                + " -fx-border-width: 1px;";
+        for(int i = 0; i < 3; i++) {
+            if (cell[i][0].getPlayer() == cell[i][1].getPlayer()  
+                && cell[i][1].getPlayer() == cell[i][2].getPlayer()
+                && cell[i][0].getPlayer() != ' ')   {
+                cell[i][0].setStyle(winTile);
+                cell[i][1].setStyle(winTile);
+                cell[i][2].setStyle(winTile);
+            }
+        }
+        
+        for(int i = 0; i < 3; i++) {
+            if (cell[0][i].getPlayer() == cell[1][i].getPlayer() 
+                && cell[1][i].getPlayer() == cell[2][i].getPlayer()
+                && cell[1][i].getPlayer() != ' ') {
+                cell[0][i].setStyle(winTile);
+                cell[1][i].setStyle(winTile);
+                cell[2][i].setStyle(winTile);
+            }
+        }
+        
+        if (cell[0][0].getPlayer() == cell[1][1].getPlayer() && cell[1][1].getPlayer() == cell[2][2].getPlayer()) {
+            cell[0][0].setStyle(winTile);
+            cell[1][1].setStyle(winTile);
+            cell[2][2].setStyle(winTile);
+        }
+        
+        if (cell[0][2].getPlayer() == cell[1][1].getPlayer() && cell[1][1].getPlayer() == cell[2][0].getPlayer()) {
+            cell[0][2].setStyle(winTile);
+            cell[1][1].setStyle(winTile);
+            cell[2][0].setStyle(winTile);   
+        }
+    } 
+    
     public void fadeAnimation(int duartion) {
         KeyFrame start = new KeyFrame(Duration.seconds(duartion),
                 new KeyValue(videoPane.opacityProperty(), 1));
         KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
                 new KeyValue(videoPane.opacityProperty(), 0));
-        Timeline fade = new Timeline(start, end);
+        fade = new Timeline(start, end);
         fade.play();
     } 
 }

@@ -64,6 +64,7 @@ public class SinglePlayerGameController {
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
+    private Timeline fade;
     
     private final String winTile = "-fx-background-color: #adff2f;"
                 + " -fx-opacity: 0.7;"
@@ -129,6 +130,7 @@ public class SinglePlayerGameController {
             winVideo.stop();
             loseVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
             cellsReset();
         });
@@ -139,6 +141,7 @@ public class SinglePlayerGameController {
             winVideo.stop();
             loseVideo.stop();
             tieVideo.stop();
+            fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
             AnimationHelper.fadeAnimate(mainMenuBase);
             clickSound.play();
@@ -272,6 +275,7 @@ public class SinglePlayerGameController {
                     videoPane.getChildren().add(winView);
                     winVideo.play();
                     fadeAnimation(7);
+                    colorTiles();
                     mainPlayer = null;
                 }
                 else if (isBoardFull()){
@@ -299,6 +303,7 @@ public class SinglePlayerGameController {
                     turnLabel.setText(name2 + " won!");
                     score2++;
                     updateScore();
+                    colorTiles();
                     videoPane.getChildren().add(loseView);
                     loseVideo.play();
                     fadeAnimation(10);
@@ -551,13 +556,51 @@ public class SinglePlayerGameController {
 
     }
     
+    public void colorTiles() {
+        final String winTile = "-fx-background-color: #adff2f;"
+                + " -fx-opacity: 0.7;"
+                + " -fx-border-color: black;"
+                + " -fx-border-width: 1px;";
+        for(int i = 0; i < 3; i++) {
+            if (cells[i][0].getPlayer() == cells[i][1].getPlayer()  
+                && cells[i][1].getPlayer() == cells[i][2].getPlayer()
+                && cells[i][0].getPlayer() != null)   {
+                cells[i][0].setStyle(winTile);
+                cells[i][1].setStyle(winTile);
+                cells[i][2].setStyle(winTile);
+            }
+        }
+        
+        for(int i = 0; i < 3; i++) {
+            if (cells[0][i].getPlayer() == cells[1][i].getPlayer() 
+                && cells[1][i].getPlayer() == cells[2][i].getPlayer()
+                && cells[1][i].getPlayer() != null) {
+                cells[0][i].setStyle(winTile);
+                cells[1][i].setStyle(winTile);
+                cells[2][i].setStyle(winTile);
+            }
+        }
+        
+        if (cells[0][0].getPlayer() == cells[1][1].getPlayer() && cells[1][1].getPlayer() == cells[2][2].getPlayer()) {
+            cells[0][0].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][2].setStyle(winTile);
+        }
+        
+        if (cells[0][2].getPlayer() == cells[1][1].getPlayer() && cells[1][1].getPlayer() == cells[2][0].getPlayer()) {
+            cells[0][2].setStyle(winTile);
+            cells[1][1].setStyle(winTile);
+            cells[2][0].setStyle(winTile);   
+        }
+    }
+    
     
     public void fadeAnimation(int duartion) {
         KeyFrame start = new KeyFrame(Duration.seconds(duartion),
                 new KeyValue(videoPane.opacityProperty(), 1));
         KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
                 new KeyValue(videoPane.opacityProperty(), 0));
-        Timeline fade = new Timeline(start, end);
+        fade = new Timeline(start, end);
         fade.play();
     }    
 }
