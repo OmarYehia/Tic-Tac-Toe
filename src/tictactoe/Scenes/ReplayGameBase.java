@@ -121,7 +121,7 @@ public class ReplayGameBase extends AnchorPane {
         mainMeniBtn.setMnemonicParsing(false);
         mainMeniBtn.setPrefHeight(17.0);
         mainMeniBtn.setPrefWidth(103.0);
-        mainMeniBtn.setText("Main Menu");
+        mainMeniBtn.setText("Back");
         mainMeniBtn.setFont(new Font(16.0));
 
         dropShadow0.setColor(javafx.scene.paint.Color.valueOf("#857e7e96"));

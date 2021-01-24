@@ -64,7 +64,7 @@ public class SinglePlayerGameController {
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
-    private Timeline fade;
+    Timeline fade = new Timeline();
     
     private final String winTile = "-fx-background-color: #adff2f;"
                 + " -fx-opacity: 0.7;"

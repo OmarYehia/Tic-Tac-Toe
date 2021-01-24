@@ -87,7 +87,7 @@ public class MultiplayerGameController implements Runnable {
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
-    Timeline fade;
+    Timeline fade = new Timeline();
   
     public MultiplayerGameController(
             Stage primaryStage,

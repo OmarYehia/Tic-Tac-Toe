@@ -25,6 +25,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
+import tictactoe.Scenes.ReplayMenuBase;
 
 /**
  *
@@ -54,7 +55,7 @@ public class ReplayGameController implements Runnable{
     
     private boolean continueGame = true;
     private Thread th;
-    private MainMenuBase mainMenuBase;
+    private ReplayMenuBase replayMenuBase;
     
     int row;
     int col;
@@ -66,12 +67,12 @@ public class ReplayGameController implements Runnable{
     private MediaView loseView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
-    Timeline fade;
+    Timeline fade = new Timeline();
     
     
     public ReplayGameController(
             Stage primaryStage,
-            Button mainMenu,
+            Button backBtn,
             Button playAgain,
             GridPane gridPane,
             Label playerName1,
@@ -86,7 +87,7 @@ public class ReplayGameController implements Runnable{
             String[] playerTurns,
             AnchorPane videoPane) {
         
-        mainMenuBtn = mainMenu;
+        mainMenuBtn = backBtn;
         playAgainBtn = playAgain;
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
@@ -139,17 +140,18 @@ public class ReplayGameController implements Runnable{
             fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
             th.start();
+            playAgainBtn.setDisable(true);
         });
         
-        mainMenu.setOnAction(e -> {
-            mainMenuBase = new MainMenuBase(primaryStage);
-            Scene scene = new Scene(mainMenuBase, 636, 596);
+        backBtn.setOnAction(e -> {
+            replayMenuBase = new ReplayMenuBase(primaryStage, name1);
+            Scene scene = new Scene(replayMenuBase, 636, 596);
             winVideo.stop();
             loseVideo.stop();
             tieVideo.stop();
             fade.stop();
             videoPane.getChildren().removeAll(winView, loseView, tieView);
-            AnimationHelper.fadeAnimate(mainMenuBase);
+            AnimationHelper.fadeAnimate(replayMenuBase);
             clickSound.play();
             primaryStage.setScene(scene);
         });

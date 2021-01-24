@@ -55,7 +55,7 @@ public class TwoPlayerGameController {
     private MediaView winView;
     private MediaPlayer tieVideo;
     private MediaView tieView;
-    Timeline fade;
+    Timeline fade = new Timeline();
     
     private int step;
     private int[] rowArr;
@@ -226,7 +226,6 @@ public class TwoPlayerGameController {
         
         public void resetPlayer() {
             if (player != null) {
-                System.out.println("Resetplayercalled;");
                 player = null;
                 getChildren().removeAll(l1, l2, oShape);
                 mainPlayer = name1;

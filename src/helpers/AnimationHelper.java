@@ -12,6 +12,7 @@ import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
 import tictactoe.Scenes.MultiplayerGameBase;
 import tictactoe.Scenes.MultiplayerNameBase;
+import tictactoe.Scenes.ReplayMenuBase;
 import tictactoe.Scenes.ReplayNameBase;
 import tictactoe.Scenes.SinglePlayerGameBase;
 import tictactoe.Scenes.SinglePlayerLevelsBase;
@@ -97,6 +98,15 @@ public abstract class AnimationHelper {
     }
     
     public static void fadeAnimate(TwoPlayerGameBase base) {
+            KeyFrame start = new KeyFrame(Duration.ZERO,
+                    new KeyValue(base.opacityProperty(), 0));
+            KeyFrame end = new KeyFrame(Duration.seconds(0.3),
+                    new KeyValue(base.opacityProperty(), 1));
+            Timeline fade = new Timeline(start, end);
+            fade.play();
+    }
+    
+    public static void fadeAnimate(ReplayMenuBase base) {
             KeyFrame start = new KeyFrame(Duration.ZERO,
                     new KeyValue(base.opacityProperty(), 0));
             KeyFrame end = new KeyFrame(Duration.seconds(0.3),
