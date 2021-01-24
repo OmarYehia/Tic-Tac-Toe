@@ -3,6 +3,7 @@ package tictactoe.Scenes;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,6 +29,7 @@ public class MainMenuBase extends StackPane {
     protected final Button replayBtn;
     protected final Label copyRightsLabel;
     protected final Button quitBtn;
+    protected final ToggleButton soundBtn;
     
     private MainMenuController controller;
 
@@ -44,6 +46,7 @@ public class MainMenuBase extends StackPane {
         replayBtn = new Button();
         copyRightsLabel = new Label();
         quitBtn = new Button();
+        soundBtn = new ToggleButton();
 
 
         anchorPane.setId("Tic-Tac-Toe");
@@ -120,6 +123,17 @@ public class MainMenuBase extends StackPane {
 
         replayBtn.setEffect(dropShadowBtns);
         replayBtn.setCursor(Cursor.HAND);
+        
+        soundBtn.setLayoutX(570.0);
+        soundBtn.setLayoutY(25.0);
+        soundBtn.setMnemonicParsing(false);
+        soundBtn.setPrefHeight(45.0);
+        soundBtn.setMaxWidth(45.0);
+        ImageView view = new ImageView(new Image(getClass().getResource("images/mute.png").toString()));
+        view.setFitWidth(25.0);
+        view.setFitHeight(20.0);
+        soundBtn.setGraphic(view);
+        soundBtn.setFocusTraversable(false);
 
         copyRightsLabel.setLayoutX(175.0);
         copyRightsLabel.setLayoutY(555.0);
@@ -148,6 +162,7 @@ public class MainMenuBase extends StackPane {
         anchorPane.getChildren().add(replayBtn);
         anchorPane.getChildren().add(copyRightsLabel);
         anchorPane.getChildren().add(quitBtn);
+        anchorPane.getChildren().add(soundBtn);
         getChildren().add(anchorPane);
         
         controller = new MainMenuController(primaryStage,
@@ -155,7 +170,8 @@ public class MainMenuBase extends StackPane {
                 twoPlayersBtn,
                 playFriendBtn,
                 replayBtn,
-                quitBtn);
+                quitBtn,
+                soundBtn);
     }
     
     

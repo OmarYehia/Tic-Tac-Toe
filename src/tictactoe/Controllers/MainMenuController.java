@@ -11,10 +11,10 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.util.Duration;
 import tictactoe.Scenes.MultiplayerNameBase;
 import tictactoe.Scenes.ReplayNameBase;
@@ -36,7 +36,8 @@ public class MainMenuController {
             Button twoPlayersBtn,
             Button playFriendBtn,
             Button replayBtn,
-            Button quitBtn) 
+            Button quitBtn,
+            ToggleButton soundBtn) 
     {
         
         // Sound
@@ -52,7 +53,7 @@ public class MainMenuController {
 
         Timeline timeline = new Timeline(
                         new KeyFrame(Duration.seconds(3),
-                        new KeyValue(mainMenuSound.volumeProperty(), 0.8)));
+                        new KeyValue(mainMenuSound.volumeProperty(), 0.1)));
         timeline.play(); 
         
         clickSound = new MediaPlayer(
@@ -97,6 +98,20 @@ public class MainMenuController {
             mainMenuSound.stop();
             clickSound.play();
             primaryStage.setScene(scene);
+        });
+        
+        soundBtn.setOnAction(e -> {
+            
+            clickSound.play();
+            if(soundBtn.isSelected()) {
+                mainMenuSound.stop();
+            }
+            else {
+                mainMenuSound.play();
+                mainMenuSound.setVolume(0);
+                timeline.play(); 
+            }
+            
         });
         
         quitBtn.setOnAction(e -> {
