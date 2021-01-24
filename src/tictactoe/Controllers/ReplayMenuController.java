@@ -42,7 +42,6 @@ public class ReplayMenuController {
             db = new TicTacToeDB();
             
             String[] opponents = db.getPlayerOpponentsName(name);
-            System.out.println(opponents);
             String[] dates = db.getPlayerDates(name);
             int[] matchIDs = db.getPlayerMatchIDs(name);
             

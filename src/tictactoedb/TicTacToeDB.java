@@ -5,15 +5,10 @@
  */
 package tictactoedb;
 
-import com.mysql.cj.x.protobuf.MysqlxSession;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sql.rowset.CachedRowSet;
 
 public class TicTacToeDB {
 
@@ -44,9 +39,7 @@ public class TicTacToeDB {
     //****Parametrized constructor****//
     public TicTacToeDB(int i[], int j[], String[] sentNames, String winner) {
         player1 = sentNames[0];
-        System.out.println("Plqyer 111111111     " + player1);
         player2 = sentNames[1];
-        System.out.println("Plqyer 22222     " + player2);
         int y = 0;
         while (y < 9 && sentNames[y] != null) {
             row = new int[y + 1];
@@ -64,13 +57,10 @@ public class TicTacToeDB {
         addNewPlayer(player1);
         addNewPlayer(player2);
         
-        System.out.println("Plqyer 22222     " + player2);
         //****Add new game****//        
         if (player2.toLowerCase().equals("computer")) {
-            System.out.println("Ifffffffffffffffffffffffffffffffffff");
             addNewGame(player1, winner);
         } else {
-            System.out.println("elseeeeeeeeeeeeee");
             addNewGame(player1, player2, winner);
         }
 
@@ -91,6 +81,7 @@ public class TicTacToeDB {
             PreparedStatement getGamesID
                     = con.prepareStatement("SELECT game_id FROM game WHERE player1_id = ?;");
             getGamesID.setInt(1,playerID);
+            getGamesID.setInt(2,playerID);
             rs = getGamesID.executeQuery();
             boolean flag1 = rs.next();
             int flag2 = 0;
@@ -105,14 +96,8 @@ public class TicTacToeDB {
                     gamesIDarr[i] =  tempGamesID.get(i);
                     i++;
                 }
-//                for(int x : gamesIDarr){
-//                    System.out.println(x);
-//                }
             }
             if(flag1 != true && flag2 == 0){
-//                gamesIDarr = new int[1];
-//                gamesIDarr[0] = 0;
-//                System.out.println("name doesn't exist ,array contains: "+gamesIDarr[0]);
                 return null;
             }
         } catch (SQLException ex) {
@@ -127,53 +112,16 @@ public class TicTacToeDB {
         }
         return gamesIDarr;
     }
-
-    //------------------------------------------------------------------------//
-    //****Retreive opponents****//
-//    public String[] getPlayerOpponents(String player1Name){
-//        openCon();
-//         ArrayList<String> opponentList = new ArrayList<>();
-//        String[] opponentArr = new String[0];
-//        int i=0;
-//        try {
-//            int player1ID = getPlayerID(player1Name);
-//            PreparedStatement getOpponents
-//                    = con.prepareStatement("SELECT name FROM player WHERE id IN "
-//                            + "(SELECT player2_id FROM tictactoe.game WHERE player1_id = ?);");
-//            getOpponents.setInt(1, player1ID);
-//            ResultSet rs = getOpponents.executeQuery();
-//            while(rs.next()){
-//                opponentList.add(rs.getString(1));
-//            }
-//            opponentArr = new String[opponentList.size()];
-//            while(i < opponentList.size()){
-//                opponentArr[i] = opponentList.get(i);
-//                i++;
-//            }
-////            for(String s : opponentArr){
-////                System.out.println(s);
-////            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        } finally{
-//            closeCon();
-//        }
-//        return opponentArr;
-//    }
-    
-
     
     //------------------------------------------------------------------------//
     //****Retreive opponents IDs****//
     public ArrayList getPlayerOpponentsID(String player1Name){
-//        openCon();
-         ArrayList<Integer> opponentList = new ArrayList<>();
-//        int[] opponentArr = new int[0];
-//        int i=0;
+//      openCon();
+        ArrayList<Integer> opponentList = new ArrayList<>();
+
         ResultSet rs = null;
         try {
             int player1ID = getPlayerID(player1Name);
-            System.out.println("playerID: "+player1ID);
             PreparedStatement getOpponentsID
                     = con.prepareStatement("SELECT player2_id FROM tictactoe.game WHERE player1_id = ?;");
             getOpponentsID.setInt(1, player1ID);
@@ -186,17 +134,9 @@ public class TicTacToeDB {
                     opponentList.add(rs.getInt(1));
                     flag1 = rs.next();
                 }
-//                opponentArr = new int[opponentList.size()];
-//                while(i < opponentList.size()){
-//                    System.out.println("list contains: "+opponentList.get(i)+" ,with size: "+opponentList.size());
-//                    opponentArr[i] = opponentList.get(i);
-//                    i++;
-//                }
             } 
             if(flag1 != true && flag2 == 0){    //to check if name doesn't exist
                 opponentList.add(-1);
-//                System.out.println("name doesnt exist, array size is: "
-//                        +opponentList.size()+" ,contains: "+opponentList.get(0));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -209,26 +149,6 @@ public class TicTacToeDB {
 //            closeCon();
         }
         return opponentList;
-    }
-    
-    //------------------------------------------------------------------------//
-    //****Main****//
-    public static void main(String[] args) {
-        TicTacToeDB t= new TicTacToeDB();
-//        int test[] = t.getMatchIDs("sad");
-//        for(int n : test){
-//            System.out.println(n);
-//        }
-//        TicTacToeDB T = new TicTacToeDB("a","b","a");
-//        t.getPlayerOpponentsID("karim"); //if name doesn't exist solved 
-//        t.getPlayerDates("karimmm");   //if name doesn't exist solved
-//        t.getPlayerResults("karimmmm"); //if name doesn't exist solved
-//        if(t.getPlayerMatchIDs("karim") == null){System.out.println("null");}  //if name doesn't exist solved
-//        t.getPlayerOpponentsName("karim"); //if name doesn't exist solved
-//        t.getMatchRow(105);
-//        t.getMatchColumn(105);
-//        t.getMatchStepPlayerName(105);
-            
     }
     
     //------------------------------------------------------------------------//

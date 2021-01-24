@@ -62,8 +62,6 @@ public class ReplayNameController {
                 alert.setHeaderText(null);
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.setContentText("We're sorry! We don't have any records of this player.");
-//                ButtonType mainMenu = new ButtonType("Main Menu");
-//                alert.getButtonTypes().setAll(mainMenu);
                 Optional<ButtonType> result = alert.showAndWait();
             }
    
