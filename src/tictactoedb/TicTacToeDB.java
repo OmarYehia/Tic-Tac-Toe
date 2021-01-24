@@ -5,15 +5,10 @@
  */
 package tictactoedb;
 
-import com.mysql.cj.x.protobuf.MysqlxSession;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sql.rowset.CachedRowSet;
 
 public class TicTacToeDB {
 
@@ -44,9 +39,7 @@ public class TicTacToeDB {
 //****Parametrized constructor****//
     public TicTacToeDB(int i[], int j[], String sentNames[], String winner) {
         player1 = sentNames[0];
-        System.out.println("Plqyer 111111111     " + player1);
         player2 = sentNames[1];
-        System.out.println("Plqyer 22222     " + player2);
         int y = 0;
         while (y < 9 && sentNames[y] != null) {
             row = new int[y + 1];
@@ -63,65 +56,17 @@ public class TicTacToeDB {
         //****Add players****//
         addNewPlayer(player1);
         addNewPlayer(player2);
-        
-        System.out.println("Plqyer 22222     " + player2);
+
         //****Add new game****//        
         if (player2.toLowerCase().equals("computer")) {
-            System.out.println("Ifffffffffffffffffffffffffffffffffff");
             addNewGame(player1, winner);
         } else {
-            System.out.println("elseeeeeeeeeeeeee");
             addNewGame(player1, player2, winner);
         }
 
         //****Add game steps****//
         addGameSteps(row, col, playerNames);
     }
-
-    //------------------------------------------------------------------------//
-    //****Retreive match IDs****// 
-//    public int[] getPlayerMatchIDs(String player_name){
-//        openCon();
-//        ArrayList<Integer> tempGamesID = new ArrayList<>();
-//        int[] gamesIDarr = new int[0];
-//        int i=0;
-//        ResultSet rs = null;
-//        try {
-//            int playerID = getPlayerID(player_name);
-//            PreparedStatement getGamesID
-//                    = con.prepareStatement("SELECT game_id FROM game WHERE player1_id = ? OR player2_id = ?;");
-//            getGamesID.setInt(1,playerID);
-//            getGamesID.setInt(2,playerID);  ////////////////////////////////////
-//            rs = getGamesID.executeQuery();
-//            boolean flag1 = rs.next();
-//            int flag2 = 0;
-//            if(flag1){
-//                flag2 = 1;
-//                 while(flag1){
-//                    tempGamesID.add(rs.getInt(1));
-//                    flag1 = rs.next();
-//                }
-//                gamesIDarr = new int[tempGamesID.size()];
-//                while(i <tempGamesID.size()){
-//                    gamesIDarr[i] =  tempGamesID.get(i);
-//                    i++;
-//                }
-//            }
-//            if(flag1 != true && flag2 == 0){
-//                return null;
-//            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        } finally{
-//            try {
-//                rs.close();
-//            } catch (SQLException RSex) {
-//                RSex.printStackTrace();
-//            }
-//            closeCon();
-//        }
-//        return gamesIDarr;
-//    }
     
     //------------------------------------------------------------------------//
     //****Retreive match IDs(TEST)****//\\****Fixed to retreive all games whether player1 or player2****\\
@@ -159,7 +104,6 @@ public class TicTacToeDB {
                     gamesIDarr[i] =  tempGamesID.get(i);
                     i++;
                 }
-//                for(int x : gamesIDarr){ System.out.println(x); }
             }
             if(flag1 != true && flag2 == 0){
                 return null;
@@ -187,7 +131,6 @@ public class TicTacToeDB {
         try {
             int playerID = getPlayerID(playerName);
             PreparedStatement getOpponentsID
-//                    = con.prepareStatement("SELECT player2_id FROM tictactoe.game WHERE player1_id = ?;");
                     = con.prepareStatement("SELECT game_id,player1_id,player2_id "
                             + "FROM tictactoe.game WHERE player1_id = ? OR player2_id = ?;");
             getOpponentsID.setInt(1, playerID);
@@ -207,7 +150,6 @@ public class TicTacToeDB {
                         flag1 = rs.next();
                     }
                 }
-//                for(int x : opponentList){ System.out.println(x + ", count is: " + count); }
             } 
             if(flag1 != true && flag2 == 0){    //to check if name doesn't exist
                 opponentList.add(-1);
@@ -222,26 +164,6 @@ public class TicTacToeDB {
             }
         }
         return opponentList;
-    }
-    
-    //------------------------------------------------------------------------//
-    //****Main****//
-    public static void main(String[] args) {
-        TicTacToeDB t= new TicTacToeDB();
-//        int test[] = t.getMatchIDs("sad");
-//        for(int n : test){
-//            System.out.println(n);
-//        }
-//        TicTacToeDB T = new TicTacToeDB("a","b","a");
-//        t.getPlayerOpponentsID("karim"); //if name doesn't exist solved 
-//        t.getPlayerDates("karimmm");   //if name doesn't exist solved
-//        t.getPlayerResults("karimmmm"); //if name doesn't exist solved
-//        if(t.getPlayerMatchIDs("karim") == null){System.out.println("null");}  //if name doesn't exist solved
-//        t.getPlayerOpponentsName("karim"); //if name doesn't exist solved
-//        t.getMatchRow(105);
-//        t.getMatchColumn(105);
-//        t.getMatchStepPlayerName(105);
-            
     }
     
     //------------------------------------------------------------------------//
@@ -269,14 +191,13 @@ public class TicTacToeDB {
                     }
                     size++;
                 }
-//                for(String s : opponentNameList){ System.out.println(s); }
                 opponentArr = new String[opponentList.size()];
                 while(i < opponentNameList.size()){
                     opponentArr[i] = opponentNameList.get(i);
                     i++;
                 }
             } else {
-                return null;    //for best practice
+                return null;   
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -393,9 +314,7 @@ public class TicTacToeDB {
             closeCon();
         }
     }
-    
-    
-    
+
     //------------------------------------------------------------------------//
     //****Get Match Row****//
     public int[] getMatchRow(int game_id){
@@ -501,8 +420,6 @@ public class TicTacToeDB {
         return StepPlayerNameArr;
     }
     
-
-    
     //------------------------------------------------------------------------//
     //****Add steps****// 
     public void addGameSteps(int i[], int j[], String playerName[]) {
@@ -537,9 +454,6 @@ public class TicTacToeDB {
 
     }
     
-
-
-
     //------------------------------------------------------------------------//
     //****Add New Player****//
     public void addNewPlayer(String name) {
@@ -683,11 +597,10 @@ public class TicTacToeDB {
     public void openCon() {
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/tictactoe", "root", "maxynuker");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/tictactoe", "root", "4994");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
     }
 
     //------------------------------------------------------------------------//
@@ -703,7 +616,4 @@ public class TicTacToeDB {
             ex.printStackTrace();
         }
     }
-
-
-    
 }
