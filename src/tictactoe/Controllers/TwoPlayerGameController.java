@@ -6,17 +6,23 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
 import tictactoedb.TicTacToeDB;
 
@@ -37,6 +43,7 @@ public class TwoPlayerGameController {
     private final String name1;
     private final String name2;
     private final GridPane gridPane;
+    private final AnchorPane videoPane;
     private Label player1Score;
     private Label player2Score;
     private int score1 = 0;
@@ -44,7 +51,10 @@ public class TwoPlayerGameController {
     private MainMenuBase mainMenuBase;
     
     private MediaPlayer clickSound;
-    private MediaPlayer gameOver;
+    private MediaPlayer winVideo;
+    private MediaView winView;
+    private MediaPlayer tieVideo;
+    private MediaView tieView;
     
     private int step;
     private int[] rowArr;
@@ -62,7 +72,8 @@ public class TwoPlayerGameController {
             Label player1Score,
             Label player2Score,
             String name1,
-            String name2) {
+            String name2,
+            AnchorPane videoPane) {
         
         this.mainMenuBtn = mainMenu;
         this.playAgainBtn = playAgain;
@@ -75,17 +86,28 @@ public class TwoPlayerGameController {
         this.player1Score = player1Score;
         this.player2Score = player2Score;
         this.mainPlayer = name1;
+        this.videoPane = videoPane;
         
         step = 0;
         rowArr = new int[9];
         colArr = new int[9];
         players = new String[9];
         
-        // Sounds
+        // Media
         clickSound = new MediaPlayer(
                 new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
-        gameOver = new MediaPlayer(
-                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
+        
+        winVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/winning.mp4").toExternalForm()));
+        winView = new MediaView(winVideo);
+        winView.setFitHeight(397.0);
+        winView.setFitWidth(491.0);
+        
+        tieVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/tie.mp4").toExternalForm()));
+        tieView = new MediaView(tieVideo);
+        tieView.setFitHeight(397.0);
+        tieView.setFitWidth(491.0);
         
         // Inititializing labels and cells
         updateScore();
@@ -94,14 +116,17 @@ public class TwoPlayerGameController {
         
         playAgainBtn.setOnAction(e -> {
             cellsReset();
-            gameOver.stop();
+            winVideo.stop();
+            tieVideo.stop();
+            videoPane.getChildren().removeAll(winView, tieView);
         });
         
         mainMenu.setOnAction(e -> {
             mainMenuBase = new MainMenuBase(primaryStage);
-            Scene scene = new Scene(mainMenuBase, 636, 596);
+            Scene scene = new Scene(mainMenuBase, 636, 596);winVideo.stop();
+            tieVideo.stop();
+            videoPane.getChildren().removeAll(winView, tieView);        
             AnimationHelper.fadeAnimate(mainMenuBase);
-            gameOver.stop();
             clickSound.play();
             primaryStage.setScene(scene);
         });
@@ -218,11 +243,17 @@ public class TwoPlayerGameController {
                 if (hasWon(mainPlayer)) {
                     turnLabel.setText(mainPlayer + " won!");
                     new TicTacToeDB(rowArr, colArr, players, mainPlayer);
+                    videoPane.getChildren().add(winView);
+                    winVideo.play();
+                    fadeAnimation(7);
                     mainPlayer = null;
                 }
                 else if (isBoardFull()){
                     mainPlayer = null;
                     turnLabel.setText("It's a draw!");
+                    videoPane.getChildren().add(tieView);
+                    tieVideo.play();
+                    fadeAnimation(10);
                     new TicTacToeDB(rowArr, colArr, players, "draw");
 
                 } else {
@@ -260,7 +291,6 @@ public class TwoPlayerGameController {
                 cells[i][0].setStyle(winTile);
                 cells[i][1].setStyle(winTile);
                 cells[i][2].setStyle(winTile);
-                gameOver.play();
                 updateScore();
                 return true;
             }
@@ -277,7 +307,6 @@ public class TwoPlayerGameController {
                 cells[0][i].setStyle(winTile);
                 cells[1][i].setStyle(winTile);
                 cells[2][i].setStyle(winTile);
-                gameOver.play();
                 updateScore();
                 return true;
             }
@@ -293,7 +322,6 @@ public class TwoPlayerGameController {
             cells[0][0].setStyle(winTile);
             cells[1][1].setStyle(winTile);
             cells[2][2].setStyle(winTile);
-            gameOver.play();
             updateScore();
             return true;
         }
@@ -308,14 +336,21 @@ public class TwoPlayerGameController {
             cells[0][2].setStyle(winTile);
             cells[1][1].setStyle(winTile);
             cells[2][0].setStyle(winTile);
-            gameOver.play();
             updateScore();
             return true;
         }
         
         return false;
-
     }
+    
+    public void fadeAnimation(int duartion) {
+        KeyFrame start = new KeyFrame(Duration.seconds(duartion),
+                new KeyValue(videoPane.opacityProperty(), 1));
+        KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
+                new KeyValue(videoPane.opacityProperty(), 0));
+        Timeline fade = new Timeline(start, end);
+        fade.play();
+    } 
     
 }
 

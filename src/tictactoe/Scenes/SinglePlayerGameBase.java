@@ -35,6 +35,7 @@ public class SinglePlayerGameBase extends AnchorPane {
     protected final Label turnLabel;
     protected final Button playAgainBtn;
     protected final DropShadow dropShadow1;
+    protected final AnchorPane videoPane;
     private SinglePlayerGameController controller;
 
     public SinglePlayerGameBase(Stage primaryStage, String name, String difficulty) {
@@ -57,6 +58,7 @@ public class SinglePlayerGameBase extends AnchorPane {
         turnLabel = new Label();
         playAgainBtn = new Button();
         dropShadow1 = new DropShadow();
+        videoPane = new AnchorPane();
 
         setId("AnchorPane");
         setPrefHeight(543.0);
@@ -107,7 +109,7 @@ public class SinglePlayerGameBase extends AnchorPane {
         gridPane.setEffect(dropShadow);
 
         mainMeniBtn.setLayoutX(52.0);
-        mainMeniBtn.setLayoutY(557.0);
+        mainMeniBtn.setLayoutY(520.0);
         mainMeniBtn.setMnemonicParsing(false);
         mainMeniBtn.setPrefHeight(17.0);
         mainMeniBtn.setPrefWidth(103.0);
@@ -147,7 +149,7 @@ public class SinglePlayerGameBase extends AnchorPane {
         turnLabel.setFont(new Font(27.0));
 
         playAgainBtn.setLayoutX(487.0);
-        playAgainBtn.setLayoutY(557.0);
+        playAgainBtn.setLayoutY(520.0);
         playAgainBtn.setMnemonicParsing(false);
         playAgainBtn.setPrefHeight(17.0);
         playAgainBtn.setPrefWidth(103.0);
@@ -160,6 +162,12 @@ public class SinglePlayerGameBase extends AnchorPane {
         dropShadow1.setSpread(0.02);
         playAgainBtn.setEffect(dropShadow1);
         playAgainBtn.setCursor(Cursor.HAND);
+        
+        videoPane.setLayoutX(79.0);
+        videoPane.setLayoutY(160.0);
+        videoPane.setPrefHeight(397.0);
+        videoPane.setPrefWidth(491.0);
+        videoPane.setMouseTransparent(true);
 
         getChildren().add(rectangle);
         gridPane.getColumnConstraints().add(columnConstraints);
@@ -176,6 +184,7 @@ public class SinglePlayerGameBase extends AnchorPane {
         getChildren().add(player2Score);
         getChildren().add(turnLabel);
         getChildren().add(playAgainBtn);
+        getChildren().add(videoPane);
         controller = new SinglePlayerGameController(
                 primaryStage,
                 mainMeniBtn,
@@ -186,7 +195,9 @@ public class SinglePlayerGameBase extends AnchorPane {
                 turnLabel,
                 player1Score,
                 player2Score,
-                name, difficulty);
+                name,
+                difficulty,
+                videoPane);
 
     }
 }

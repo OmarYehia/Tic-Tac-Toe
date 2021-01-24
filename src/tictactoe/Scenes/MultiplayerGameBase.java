@@ -38,6 +38,7 @@ public class MultiplayerGameBase extends AnchorPane {
     protected final Label turnLabel;
     protected final Button playAgainBtn;
     protected final DropShadow dropShadow1;
+    protected final AnchorPane videoPane;
     
     private MultiplayerGameController controller;
 
@@ -64,6 +65,7 @@ public class MultiplayerGameBase extends AnchorPane {
         turnLabel = new Label();
         playAgainBtn = new Button();
         dropShadow1 = new DropShadow();
+        videoPane = new AnchorPane();
 
         setId("AnchorPane");
         setPrefHeight(543.0);
@@ -168,6 +170,12 @@ public class MultiplayerGameBase extends AnchorPane {
         dropShadow1.setSpread(0.02);
         playAgainBtn.setEffect(dropShadow1);
         playAgainBtn.setCursor(Cursor.HAND);
+        
+        videoPane.setLayoutX(79.0);
+        videoPane.setLayoutY(160.0);
+        videoPane.setPrefHeight(397.0);
+        videoPane.setPrefWidth(491.0);
+        videoPane.setMouseTransparent(true);
 
         getChildren().add(rectangle);
         gridPane.getColumnConstraints().add(columnConstraints);
@@ -183,6 +191,7 @@ public class MultiplayerGameBase extends AnchorPane {
         getChildren().add(player1Score);
         getChildren().add(player2Score);
         getChildren().add(turnLabel);
+        getChildren().add(videoPane);
         getChildren().add(playAgainBtn);
            
         controller = new MultiplayerGameController(
@@ -195,6 +204,7 @@ public class MultiplayerGameBase extends AnchorPane {
                 turnLabel,
                 player1Score,
                 player2Score,
-                name, s);
+                name, s,
+                videoPane);
     }
 }

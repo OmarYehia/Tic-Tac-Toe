@@ -34,6 +34,7 @@ public class ReplayGameBase extends AnchorPane {
     protected final Label turnLabel;
     protected final Button playAgainBtn;
     protected final DropShadow dropShadow1;
+    protected final AnchorPane videoPane;
     
     private ReplayGameController controller;
 
@@ -64,6 +65,7 @@ public class ReplayGameBase extends AnchorPane {
         turnLabel = new Label();
         playAgainBtn = new Button();
         dropShadow1 = new DropShadow();
+        videoPane = new AnchorPane();
 
         setId("AnchorPane");
         setPrefHeight(543.0);
@@ -138,16 +140,12 @@ public class ReplayGameBase extends AnchorPane {
         player2Name.setLayoutY(41.0);
         player2Name.setText("Player 2 Name");
         player2Name.setFont(new Font(17.0));
-
-//        player1Score.setLayoutX(103.0);
-//        player1Score.setLayoutY(68.0);
-//        player1Score.setText("Score:");
-//        player1Score.setFont(new Font(17.0));
-//
-//        player2Score.setLayoutX(492.0);
-//        player2Score.setLayoutY(68.0);
-//        player2Score.setText("Score:");
-//        player2Score.setFont(new Font(17.0));
+        
+        videoPane.setLayoutX(79.0);
+        videoPane.setLayoutY(160.0);
+        videoPane.setPrefHeight(397.0);
+        videoPane.setPrefWidth(491.0);
+        videoPane.setMouseTransparent(true);
 
         turnLabel.setLayoutX(249.0);
         turnLabel.setLayoutY(505.0);
@@ -159,7 +157,7 @@ public class ReplayGameBase extends AnchorPane {
         playAgainBtn.setMnemonicParsing(false);
         playAgainBtn.setPrefHeight(17.0);
         playAgainBtn.setPrefWidth(103.0);
-        playAgainBtn.setText("Play Again");
+        playAgainBtn.setText("Play");
         playAgainBtn.setFont(new Font(16.0));
 
         dropShadow1.setColor(javafx.scene.paint.Color.valueOf("#857e7e96"));
@@ -183,6 +181,7 @@ public class ReplayGameBase extends AnchorPane {
         getChildren().add(player1Score);
         getChildren().add(player2Score);
         getChildren().add(turnLabel);
+        getChildren().add(videoPane);
         getChildren().add(playAgainBtn);
            
         controller = new ReplayGameController(
@@ -193,14 +192,13 @@ public class ReplayGameBase extends AnchorPane {
                 player1Name,
                 player2Name,
                 turnLabel,
-//                player1Score,
-//                player2Score,
                 name1,
                 name2,
                 token,
                 otherPlayerToken,
                 rowArr,
                 colArr,
-                playerTurns);
+                playerTurns,
+                videoPane);
     }
 }

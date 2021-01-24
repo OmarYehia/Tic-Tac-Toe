@@ -12,21 +12,27 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Optional;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import tictactoe.Scenes.MainMenuBase;
 import tictactoe.Scenes.MultiplayerGameBase;
 
@@ -50,6 +56,7 @@ public class MultiplayerGameController implements Runnable {
     private final Label playerName1;
     private final Label playerName2;
     private final Label turnLabel;
+    private final AnchorPane videoPane;
     private final GridPane gridPane;
     private MainMenuBase mainMenuBase;
     private Socket s;
@@ -74,11 +81,12 @@ public class MultiplayerGameController implements Runnable {
     private boolean waiting = true;
     
     private MediaPlayer clickSound;
-    private MediaPlayer gameOver;
-    
-    
-    
-    //private int myNum;
+    private MediaPlayer winVideo;
+    private MediaView winView;
+    private MediaPlayer loseVideo;
+    private MediaView loseView;
+    private MediaPlayer tieVideo;
+    private MediaView tieView;
   
     public MultiplayerGameController(
             Stage primaryStage,
@@ -91,7 +99,8 @@ public class MultiplayerGameController implements Runnable {
             Label player1Score,
             Label player2Score,
             String name1,
-            Socket s) {
+            Socket s,
+            AnchorPane videoPane) {
         
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
@@ -100,11 +109,29 @@ public class MultiplayerGameController implements Runnable {
         this.s = s;      
         this.gridPane = gridPane;
         this.stage = primaryStage;
+        this.videoPane = videoPane;
         
+        // Media
         clickSound = new MediaPlayer(
                 new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
-        gameOver = new MediaPlayer(
-                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
+        winVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/winning.mp4").toExternalForm()));
+        winView = new MediaView(winVideo);
+        winView.setFitHeight(397.0);
+        winView.setFitWidth(491.0);
+        
+        loseVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/losing.mp4").toExternalForm()));
+        loseView = new MediaView(loseVideo);
+        loseView.setFitHeight(397.0);
+        loseView.setFitWidth(491.0);
+        
+        tieVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/tie.mp4").toExternalForm()));
+        tieView = new MediaView(tieVideo);
+        tieView.setFitHeight(397.0);
+        tieView.setFitWidth(491.0);
+        
         
         // Intitializing the board
         for(int i = 0; i < 3; i++) {
@@ -120,6 +147,10 @@ public class MultiplayerGameController implements Runnable {
                 socket.close();
                 MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName, s);
                 Scene scene = new Scene(multiGame, 636, 596);
+                winVideo.stop();
+                loseVideo.stop();
+                tieVideo.stop();
+                videoPane.getChildren().removeAll(winView, loseView, tieView);
                 AnimationHelper.fadeAnimate(multiGame);
                 clickSound.play();
                 primaryStage.setScene(scene);
@@ -133,6 +164,10 @@ public class MultiplayerGameController implements Runnable {
                 socket.close();
                 mainMenuBase = new MainMenuBase(primaryStage);
                 Scene scene = new Scene(mainMenuBase, 636, 596);
+                winVideo.stop();
+                loseVideo.stop();
+                tieVideo.stop();
+                videoPane.getChildren().removeAll(winView, loseView, tieView);
                 AnimationHelper.fadeAnimate(mainMenuBase);
                 clickSound.play();
                 primaryStage.setScene(scene);
@@ -173,7 +208,7 @@ public class MultiplayerGameController implements Runnable {
             toServer.flush();
             
             Platform.runLater(() -> {
-                    turnLabel.setText("Waiting for other player to join");
+                turnLabel.setText("Waiting for other player to join");
             });
             
             otherName = fromServer.readUTF();
@@ -295,12 +330,17 @@ public class MultiplayerGameController implements Runnable {
                 if(myToken == 'X') {
                     Platform.runLater(() -> {
                         turnLabel.setText("YOU WON!");
-                        gameOver.play();
+                        videoPane.getChildren().add(winView);
+                        winVideo.play();
+                        fadeAnimation(7);
                     });
                 } 
                 else if (myToken == 'O') {
                     Platform.runLater(() -> {
                         turnLabel.setText("You lost :(");
+                        videoPane.getChildren().add(loseView);
+                        loseVideo.play();
+                        fadeAnimation(10);
                     });
                     recieveMove();
                 }
@@ -312,6 +352,9 @@ public class MultiplayerGameController implements Runnable {
                     // Do something indicating loss
                     Platform.runLater(() -> {
                         turnLabel.setText("You lost :(");
+                        videoPane.getChildren().add(loseView);
+                        loseVideo.play();
+                        fadeAnimation(10);
                     });
                     recieveMove();
                 }
@@ -319,16 +362,20 @@ public class MultiplayerGameController implements Runnable {
                     // Do something indicating win
                     Platform.runLater(() -> {
                         turnLabel.setText("YOU WON!");
-                        gameOver.play();
+                        videoPane.getChildren().add(winView);
+                        winVideo.play();
+                        fadeAnimation(7);
                     });
                 }
             }
             
             else if (status == DRAW) {
                 continueToPlay = false;
-                // Do something in UI indicating draw
                 Platform.runLater(() -> {
                         turnLabel.setText("Its a draw");
+                        videoPane.getChildren().add(tieView);
+                        tieVideo.play();
+                        fadeAnimation(10);
                 });
                 
                 if (myToken == 'O') {
@@ -446,6 +493,15 @@ public class MultiplayerGameController implements Runnable {
             }
         }
     }    
+    
+    public void fadeAnimation(int duartion) {
+        KeyFrame start = new KeyFrame(Duration.seconds(duartion),
+                new KeyValue(videoPane.opacityProperty(), 1));
+        KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
+                new KeyValue(videoPane.opacityProperty(), 0));
+        Timeline fade = new Timeline(start, end);
+        fade.play();
+    } 
 }
 
 

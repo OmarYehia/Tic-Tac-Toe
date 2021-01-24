@@ -13,10 +13,12 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -38,11 +40,10 @@ public class ReplayGameController implements Runnable{
     private final Label playerName1;
     private final Label playerName2;
     private final Label turnLabel;
+    private final AnchorPane videoPane;
     private String name1;
     private String name2;
     private final GridPane gridPane;
-//    private Label player1Score;
-//    private Label player2Score;
     private int score1 = 0;
     private int score2 = 0;
     private char token;
@@ -59,7 +60,12 @@ public class ReplayGameController implements Runnable{
     int col;
     
     private MediaPlayer clickSound;
-    private MediaPlayer gameOver;
+    private MediaPlayer winVideo;
+    private MediaView winView;
+    private MediaPlayer loseVideo;
+    private MediaView loseView;
+    private MediaPlayer tieVideo;
+    private MediaView tieView;
     
     
     public ReplayGameController(
@@ -70,15 +76,14 @@ public class ReplayGameController implements Runnable{
             Label playerName1,
             Label playerName2,
             Label turnLabel,
-//            Label player1Score,
-//            Label player2Score,
             String name1,
             String name2,
             char token,
             char otherPlayerToken,
             int[] rowArr,
             int[] colArr,
-            String[] playerTurns) {
+            String[] playerTurns,
+            AnchorPane videoPane) {
         
         mainMenuBtn = mainMenu;
         playAgainBtn = playAgain;
@@ -93,8 +98,8 @@ public class ReplayGameController implements Runnable{
         this.colArr = colArr;
         this.playerTurns = playerTurns;
         this.otherPlayerToken = otherPlayerToken;
-//        this.player1Score = player1Score;
-//        this.player2Score = player2Score;
+        this.videoPane = videoPane;
+
         
         mainPlayer = name1;
         
@@ -102,20 +107,45 @@ public class ReplayGameController implements Runnable{
         labelInit();
         cellsInit();
         
+        // Media
         clickSound = new MediaPlayer(
                 new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
-        gameOver = new MediaPlayer(
-                new Media(getClass().getResource("/sounds/013 - Victory.mp3").toExternalForm()));
+        winVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/winning.mp4").toExternalForm()));
+        winView = new MediaView(winVideo);
+        winView.setFitHeight(397.0);
+        winView.setFitWidth(491.0);
+        
+        loseVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/losing.mp4").toExternalForm()));
+        loseView = new MediaView(loseVideo);
+        loseView.setFitHeight(397.0);
+        loseView.setFitWidth(491.0);
+        
+        tieVideo = new MediaPlayer(
+                new Media(getClass().getResource("video/tie.mp4").toExternalForm()));
+        tieView = new MediaView(tieVideo);
+        tieView.setFitHeight(397.0);
+        tieView.setFitWidth(491.0);
+
         
         playAgainBtn.setOnAction(e -> {
             th = new Thread(this);
             clickSound.play();
+            winVideo.stop();
+            loseVideo.stop();
+            tieVideo.stop();
+            videoPane.getChildren().removeAll(winView, loseView, tieView);
             th.start();
         });
         
         mainMenu.setOnAction(e -> {
             mainMenuBase = new MainMenuBase(primaryStage);
             Scene scene = new Scene(mainMenuBase, 636, 596);
+            winVideo.stop();
+            loseVideo.stop();
+            tieVideo.stop();
+            videoPane.getChildren().removeAll(winView, loseView, tieView);
             AnimationHelper.fadeAnimate(mainMenuBase);
             clickSound.play();
             primaryStage.setScene(scene);
@@ -146,6 +176,9 @@ public class ReplayGameController implements Runnable{
             if (hasWon(name1)) {
                 Platform.runLater(() -> {
                     turnLabel.setText(name1 + " won!");
+                    videoPane.getChildren().add(winView);
+                    winVideo.play();
+                    fadeAnimation(7);
                 });   
                 continueGame = false;
                 break;
@@ -153,6 +186,9 @@ public class ReplayGameController implements Runnable{
             else if (isBoardFull()){
                 Platform.runLater(() -> {
                     turnLabel.setText("It's a draw!");
+                    videoPane.getChildren().add(tieView);
+                    tieVideo.play();
+                    fadeAnimation(10);
                 });   
                 continueGame = false;
                 break;
@@ -170,6 +206,9 @@ public class ReplayGameController implements Runnable{
             if (hasWon(name2)) {
                 Platform.runLater(() -> {
                     turnLabel.setText(name2 + " won!");
+                    videoPane.getChildren().add(loseView);
+                    loseVideo.play();
+                    fadeAnimation(10);
                 });
                 continueGame = false;
                 break;
@@ -287,13 +326,15 @@ public class ReplayGameController implements Runnable{
     }
     
     public boolean hasWon(String player) {
-        final String winTile = "-fx-background-color: #adff2f; -fx-opacity: 0.7";
+        final String winTile = "-fx-background-color: #adff2f;"
+                + " -fx-opacity: 0.7;"
+                + " -fx-border-color: black;"
+                + " -fx-border-width: 1px;";
         for(int i = 0; i < 3; i++) {
             if (player.equals(cells[i][0].getPlayer())  && player.equals(cells[i][1].getPlayer()) && player.equals(cells[i][2].getPlayer())) {
                 cells[i][0].setStyle(winTile);
                 cells[i][1].setStyle(winTile);
                 cells[i][2].setStyle(winTile);
-                gameOver.play();
                 return true;
             }
         }
@@ -303,7 +344,6 @@ public class ReplayGameController implements Runnable{
                 cells[0][i].setStyle(winTile);
                 cells[1][i].setStyle(winTile);
                 cells[2][i].setStyle(winTile);
-                gameOver.play();
                 return true;
             }
         }
@@ -312,19 +352,26 @@ public class ReplayGameController implements Runnable{
             cells[0][0].setStyle(winTile);
             cells[1][1].setStyle(winTile);
             cells[2][2].setStyle(winTile);
-            gameOver.play();
             return true;
         }
         
         if (player.equals(cells[0][2].getPlayer()) && player.equals(cells[1][1].getPlayer()) && player.equals(cells[2][0].getPlayer())) {
             cells[0][2].setStyle(winTile);
             cells[1][1].setStyle(winTile);
-            cells[2][0].setStyle(winTile);
-            gameOver.play();    
+            cells[2][0].setStyle(winTile);   
             return true;
         }
         
         return false;
+    } 
+    
+    public void fadeAnimation(int duartion) {
+        KeyFrame start = new KeyFrame(Duration.seconds(duartion),
+                new KeyValue(videoPane.opacityProperty(), 1));
+        KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
+                new KeyValue(videoPane.opacityProperty(), 0));
+        Timeline fade = new Timeline(start, end);
+        fade.play();
     } 
 }
 
