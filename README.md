@@ -4,7 +4,7 @@
 
 ## ~~TODO Implement the database into the two player local game~~
 
-## TODO further enhance the server
+## ~~TODO further enhance the server~~
 
 ## ~~TODO make an animation interface/function for easier transitions~~
 
