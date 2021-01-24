@@ -59,7 +59,6 @@ public class MultiplayerGameController implements Runnable {
     private final AnchorPane videoPane;
     private final GridPane gridPane;
     private MainMenuBase mainMenuBase;
-    private Socket s;
     private Thread th;
     
     private Socket socket;
@@ -107,7 +106,7 @@ public class MultiplayerGameController implements Runnable {
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
         this.myName = name1;
-        this.s = s;      
+    
         this.gridPane = gridPane;
         this.stage = primaryStage;
         this.videoPane = videoPane;

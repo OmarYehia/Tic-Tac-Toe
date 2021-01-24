@@ -7,6 +7,9 @@ package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
 import helpers.DatabaseHelper;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -88,16 +91,25 @@ public class MainMenuController {
         });
         
         playFriendBtn.setOnAction(e -> {
-            multiplayerNameScene = new MultiplayerNameBase(primaryStage);
-            Scene scene = new Scene(multiplayerNameScene, 636, 596);
-            AnimationHelper.fadeAnimate(multiplayerNameScene);
-            mainMenuSound.stop();
-            clickSound.play();
-            primaryStage.setScene(scene);
+            if(isServerOnline()){
+                multiplayerNameScene = new MultiplayerNameBase(primaryStage);
+                Scene scene = new Scene(multiplayerNameScene, 636, 596);
+                AnimationHelper.fadeAnimate(multiplayerNameScene);
+                mainMenuSound.stop();
+                clickSound.play();
+                primaryStage.setScene(scene);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Server unavailable");
+                alert.setHeaderText(null);
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.setContentText("The server is currently down. Please try again later.");
+                Optional<ButtonType> result = alert.showAndWait();
+            }
         });
         
         replayBtn.setOnAction(e -> {
-            if(isConnected(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword)){
+            if(isDBConnected(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword)){
                 replayNameScene = new ReplayNameBase(primaryStage);
                 Scene scene = new Scene(replayNameScene,636, 596);
                 AnimationHelper.fadeAnimate(replayNameScene);
@@ -106,7 +118,7 @@ public class MainMenuController {
                 primaryStage.setScene(scene);
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Database failure");
+                alert.setTitle("Database unavailable");
                 alert.setHeaderText(null);
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.setContentText("Appearantly the database isn't connected. Please connect it and try again.");
@@ -138,7 +150,7 @@ public class MainMenuController {
         
     }
     
-    public boolean isConnected(String url, String username, String password){
+    public boolean isDBConnected(String url, String username, String password){
         boolean connected = false;
         
         try (Connection con = DriverManager.getConnection(url, username, password);){  
@@ -149,4 +161,17 @@ public class MainMenuController {
             return connected;
         }  
     }
+    
+    private boolean isServerOnline() {
+        boolean connected = false;
+        try (Socket s = new Socket(InetAddress.getLocalHost(), 1234);){
+            connected = true;
+            System.out.println(connected);
+        } catch (IOException e) {
+            System.out.println("Server is currently unavailable");
+        }       
+        finally {
+            return connected;
+        }
+    } 
  }

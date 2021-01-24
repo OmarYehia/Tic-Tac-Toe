@@ -6,6 +6,10 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -26,7 +30,7 @@ public class MultiPlayerNameController {
     private String name;
     private MainMenuBase mainMenu;
     private MultiplayerGameBase multiGame;
-    private Socket s;
+    private Socket socket;
     private MediaPlayer clickSound;
     
 
@@ -48,14 +52,16 @@ public class MultiPlayerNameController {
         });
         
         confirmBtn.setOnAction(e -> {
-            name = playerName.getText();
-            multiGame = new MultiplayerGameBase(primaryStage, name, s);
-            Scene scene = new Scene(multiGame, 636, 596);
-            AnimationHelper.fadeAnimate(multiGame);
-            clickSound.play();
-            primaryStage.setScene(scene);
+                name = playerName.getText();
+                multiGame = new MultiplayerGameBase(primaryStage, name, socket);
+                Scene scene = new Scene(multiGame, 636, 596);
+                AnimationHelper.fadeAnimate(multiGame);
+                clickSound.play();
+                primaryStage.setScene(scene);
         });
         
     }
+    
+    
     
 }
