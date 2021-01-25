@@ -547,6 +547,7 @@ public class MultiplayerGameController implements Runnable {
                 new KeyValue(videoPane.opacityProperty(), 1));
         KeyFrame end = new KeyFrame(Duration.seconds(duartion + 2),
                 new KeyValue(videoPane.opacityProperty(), 0));
+        fade = null;
         fade = new Timeline(start, end);
         fade.play();
     } 

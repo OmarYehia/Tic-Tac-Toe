@@ -13,7 +13,6 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import tictactoe.Controllers.MultiPlayerNameController;
 import tictactoe.Controllers.ReplayNameController;
 
 public class ReplayNameBase extends StackPane {
