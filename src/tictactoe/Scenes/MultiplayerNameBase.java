@@ -1,5 +1,6 @@
 package tictactoe.Scenes;
 
+import java.net.Socket;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,7 +31,7 @@ public class MultiplayerNameBase extends StackPane {
     
     private MultiPlayerNameController controller;
 
-    public MultiplayerNameBase(Stage primaryStage) {
+    public MultiplayerNameBase(Stage primaryStage, Socket s) {
 
         anchorPane = new AnchorPane();
         rectangle = new Rectangle();
@@ -129,7 +130,8 @@ public class MultiplayerNameBase extends StackPane {
                 primaryStage,
                 backBtn,
                 confirmBtn,
-                playerName);
+                playerName,
+                s);
 
     }
 }

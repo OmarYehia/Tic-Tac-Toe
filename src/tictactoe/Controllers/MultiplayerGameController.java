@@ -106,7 +106,7 @@ public class MultiplayerGameController implements Runnable {
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
         this.myName = name1;
-    
+        this.socket = s;
         this.gridPane = gridPane;
         this.stage = primaryStage;
         this.videoPane = videoPane;
@@ -189,7 +189,7 @@ public class MultiplayerGameController implements Runnable {
     
     private void connectToServer() {
         try {
-            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
+//            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
             fromServer = new DataInputStream(socket.getInputStream());
             toServer = new DataOutputStream(socket.getOutputStream());
             Thread th = new Thread(this);
