@@ -156,6 +156,10 @@ public class ReplayGameController implements Runnable{
             primaryStage.setScene(scene);
         });
         
+        primaryStage.setOnHidden(e -> {
+            System.exit(0);
+        });
+        
     }
     
     @Override

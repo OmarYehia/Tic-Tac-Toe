@@ -31,7 +31,7 @@ public class MultiplayerNameBase extends StackPane {
     
     private MultiPlayerNameController controller;
 
-    public MultiplayerNameBase(Stage primaryStage, Socket s) {
+    public MultiplayerNameBase(Stage primaryStage) {
 
         anchorPane = new AnchorPane();
         rectangle = new Rectangle();
@@ -130,8 +130,7 @@ public class MultiplayerNameBase extends StackPane {
                 primaryStage,
                 backBtn,
                 confirmBtn,
-                playerName,
-                s);
+                playerName);
 
     }
 }

@@ -147,6 +147,10 @@ public class SinglePlayerGameController {
             clickSound.play();
             primaryStage.setScene(scene);
         });
+        
+        primaryStage.setOnHidden(e -> {
+            System.exit(0);
+        });
     
     }
     public void labelInit() {

@@ -37,7 +37,7 @@ public class MainMenuController {
     private TwoPlayersNamesBase namesScene;
     private ReplayNameBase replayNameScene;
     private SinglePlayerLevelsBase singlePlayerNameScene;
-    private Socket s;
+//    private Socket s;
     
     
     private MediaPlayer mainMenuSound;
@@ -92,22 +92,12 @@ public class MainMenuController {
         });
         
         playFriendBtn.setOnAction(e -> {
-            if(isServerOnline()){
-                multiplayerNameScene = new MultiplayerNameBase(primaryStage, s);
+                multiplayerNameScene = new MultiplayerNameBase(primaryStage);
                 Scene scene = new Scene(multiplayerNameScene, 636, 596);
                 AnimationHelper.fadeAnimate(multiplayerNameScene);
                 mainMenuSound.stop();
                 clickSound.play();
                 primaryStage.setScene(scene);
-            } 
-            else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Server unavailable");
-                alert.setHeaderText(null);
-                alert.initStyle(StageStyle.UNDECORATED);
-                alert.setContentText("The server is currently down. Please try again later.");
-                Optional<ButtonType> result = alert.showAndWait();
-            }
         });
         
         replayBtn.setOnAction(e -> {
@@ -163,18 +153,4 @@ public class MainMenuController {
             return connected;
         }  
     }
-    
-    private boolean isServerOnline() {
-        boolean connected = false;
-        try {
-            s = new Socket(InetAddress.getLocalHost(), 1234);
-            connected = true;
-            System.out.println(connected);
-        } catch (IOException e) {
-            System.out.println("Server is currently unavailable");
-        }       
-        finally {
-            return connected;
-        }
-    } 
  }

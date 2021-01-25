@@ -99,14 +99,12 @@ public class MultiplayerGameController implements Runnable {
             Label player1Score,
             Label player2Score,
             String name1,
-            Socket s,
             AnchorPane videoPane) {
         
         this.playerName1 = playerName1;
         this.playerName2 = playerName2;
         this.turnLabel = turnLabel;
         this.myName = name1;
-        this.socket = s;
         this.gridPane = gridPane;
         this.stage = primaryStage;
         this.videoPane = videoPane;
@@ -145,7 +143,7 @@ public class MultiplayerGameController implements Runnable {
         playAgain.setOnAction(e -> {
             try {
                 socket.close();
-                MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName, s);
+                MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName);
                 Scene scene = new Scene(multiGame, 636, 596);
                 winVideo.stop();
                 loseVideo.stop();
@@ -189,13 +187,29 @@ public class MultiplayerGameController implements Runnable {
     
     private void connectToServer() {
         try {
-//            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
+            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
             fromServer = new DataInputStream(socket.getInputStream());
             toServer = new DataOutputStream(socket.getOutputStream());
             Thread th = new Thread(this);
             th.start();
         } catch (IOException e) {
             System.out.println("Server is currently unavailable");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Server unavailable");
+            alert.setHeaderText(null);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.setContentText("The server is currently down. Please try again later.");
+            ButtonType mainMenu = new ButtonType("Main Menu");
+            alert.getButtonTypes().setAll(mainMenu);
+            Optional<ButtonType> result = alert.showAndWait();
+            
+            if (result.get() == mainMenu) {
+                mainMenuBase = new MainMenuBase(stage);
+                Scene scene = new Scene(mainMenuBase, 636, 596);
+                AnimationHelper.fadeAnimate(mainMenuBase);
+                clickSound.play();
+                stage.setScene(scene);
+            }
         }       
     }
 

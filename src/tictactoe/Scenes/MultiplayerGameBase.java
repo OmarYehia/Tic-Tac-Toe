@@ -44,8 +44,7 @@ public class MultiplayerGameBase extends AnchorPane {
 
     public MultiplayerGameBase(
             Stage primaryStage,
-            String name,
-            Socket s) {
+            String name) {
 
         rectangle = new Rectangle();
         gridPane = new GridPane();
@@ -204,7 +203,7 @@ public class MultiplayerGameBase extends AnchorPane {
                 turnLabel,
                 player1Score,
                 player2Score,
-                name, s,
+                name,
                 videoPane);
     }
 }
