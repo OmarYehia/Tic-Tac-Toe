@@ -5,6 +5,10 @@
  */
 package tictactoe.Controllers;
 
+import helpers.DatabaseHelper;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Optional;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -50,23 +54,38 @@ public class ReplayNameController {
         });
         
         confirmBtn.setOnAction(e -> {
-            name = playerName.getText();
-            if(db.isExistingPlayer(name) == 1) {
-                replayMenu = new ReplayMenuBase(primaryStage, name);
-                Scene scene = new Scene(replayMenu, 636, 596);
-                clickSound.play();
-                primaryStage.setScene(scene);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Unregistered player");
-                alert.setHeaderText(null);
-                alert.initStyle(StageStyle.UNDECORATED);
-                alert.setContentText("We're sorry! We don't have any records of this player.");
-                Optional<ButtonType> result = alert.showAndWait();
+            if(isDBConnected()) {
+                name = playerName.getText();
+                if(db.isExistingPlayer(name) == 1) {
+                    replayMenu = new ReplayMenuBase(primaryStage, name);
+                    Scene scene = new Scene(replayMenu, 636, 596);
+                    clickSound.play();
+                    primaryStage.setScene(scene);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Unregistered player");
+                    alert.setHeaderText(null);
+                    alert.initStyle(StageStyle.UNDECORATED);
+                    alert.setContentText("We're sorry! We don't have any records of this player.");
+                    Optional<ButtonType> result = alert.showAndWait();
+                }
             }
    
         });
         
     }
     
+    private boolean isDBConnected(){
+        boolean connected = false;
+        try {
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+                DriverManager.setLoginTimeout(1);
+                Connection con = DriverManager.getConnection(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword);
+                con.close();
+                connected = true;
+        } catch (SQLException ex) {
+            System.out.println("DB is offline");
+        }
+        return connected;
+    } 
 }

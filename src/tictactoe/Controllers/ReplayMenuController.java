@@ -5,15 +5,25 @@
  */
 package tictactoe.Controllers;
 
+import helpers.DatabaseHelper;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import tictactoe.Scenes.ReplayGameBase;
 import tictactoe.Scenes.ReplayNameBase;
 import tictactoedb.TicTacToeDB;
@@ -60,26 +70,36 @@ public class ReplayMenuController {
         });
         
         selectBtn.setOnAction(e -> {
-            String selectedMatchString = listView.getSelectionModel().getSelectedItem().toString();
-            int selectedGameID = returnGameID(selectedMatchString, matchIDs);
-            
-            int[] rowArr = db.getMatchRow(selectedGameID);
-            int[] colArr = db.getMatchColumn(selectedGameID);
-            String[] playerTurns = db.getMatchStepPlayerName(selectedGameID);
-            String secondPlayerName = returnSecondPlayerName(playerTurns, name);
+            if (isDBConnected()) {
+                String selectedMatchString = listView.getSelectionModel().getSelectedItem().toString();
+                int selectedGameID = returnGameID(selectedMatchString, matchIDs);
 
-            replayGame = new ReplayGameBase(primaryStage,
-                    name,
-                    secondPlayerName,
-                    playerToken,
-                    otherPlayerToken,
-                    rowArr, 
-                    colArr,
-                    playerTurns);
-            Scene scene = new Scene(replayGame, 636, 596);
-            clickSound.play();
-            primaryStage.setScene(scene);
+                int[] rowArr = db.getMatchRow(selectedGameID);
+                int[] colArr = db.getMatchColumn(selectedGameID);
+                String[] playerTurns = db.getMatchStepPlayerName(selectedGameID);
+                String secondPlayerName = returnSecondPlayerName(playerTurns, name);
+
+                replayGame = new ReplayGameBase(primaryStage,
+                        name,
+                        secondPlayerName,
+                        playerToken,
+                        otherPlayerToken,
+                        rowArr, 
+                        colArr,
+                        playerTurns);
+                Scene scene = new Scene(replayGame, 636, 596);
+                clickSound.play();
+                primaryStage.setScene(scene);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Lost connected to DB");
+                alert.setHeaderText(null);
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.setContentText("We're sorry! We lost connection to the DB.");
+                Optional<ButtonType> result = alert.showAndWait();
+            }
         });
+        
         
     }
     
@@ -112,6 +132,19 @@ public class ReplayMenuController {
             otherPlayerToken = 'X';
             return playerTurns[0];
         }
+    }
+    
+    private boolean isDBConnected(){
+        boolean connected = false;
+        try {
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+                Connection con = DriverManager.getConnection(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword);
+                con.close();
+                connected = true;
+        } catch (SQLException ex) {
+            System.out.println("DB is offline");
+        }
+        return connected;
     }
     
 }

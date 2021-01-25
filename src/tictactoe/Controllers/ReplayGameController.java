@@ -280,7 +280,6 @@ public class ReplayGameController implements Runnable{
         
         public Cell() {
             this.setPrefSize(300, 300);
-//            this.setOnMouseClicked(e -> handleClick());
         }
         
         public String getPlayer() {
