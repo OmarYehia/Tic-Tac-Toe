@@ -89,6 +89,8 @@ public class TwoPlayerGameController {
         this.mainPlayer = name1;
         this.videoPane = videoPane;
         
+        
+        turnLabel.setText(name1 + " turn");
         step = 0;
         rowArr = new int[9];
         colArr = new int[9];

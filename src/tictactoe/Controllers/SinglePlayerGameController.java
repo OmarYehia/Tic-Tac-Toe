@@ -100,6 +100,8 @@ public class SinglePlayerGameController {
         this.difficulty = Difficulty;
         mainPlayer = name;
         
+        turnLabel.setText(name1 + " turn");
+        
         // Media controls
         clickSound = new MediaPlayer(
                 new Media(getClass().getResource("/sounds/click-sound.mp3").toExternalForm()));
