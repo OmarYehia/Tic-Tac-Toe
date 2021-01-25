@@ -411,17 +411,8 @@ public class MultiplayerGameController implements Runnable {
                     alert.setHeaderText(null);
                     alert.initStyle(StageStyle.UNDECORATED);
                     alert.setContentText("The other player has left the game!");
-                    ButtonType mainMenu = new ButtonType("Main Menu");
-                    alert.getButtonTypes().setAll(mainMenu);
                     Optional<ButtonType> result = alert.showAndWait();
-                    
-                    if (result.get() == mainMenu) {
-                        mainMenuBase = new MainMenuBase(stage);
-                        Scene scene = new Scene(mainMenuBase, 636, 596);
-                        AnimationHelper.fadeAnimate(mainMenuBase);
-                        clickSound.play();
-                        stage.setScene(scene);
-                    }
+
                 });
             }
             
