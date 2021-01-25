@@ -59,6 +59,7 @@ public class MultiplayerGameController implements Runnable {
     private final AnchorPane videoPane;
     private final GridPane gridPane;
     private MainMenuBase mainMenuBase;
+    private Button playAgain;
     private Thread th;
     
     private Socket socket;
@@ -108,6 +109,9 @@ public class MultiplayerGameController implements Runnable {
         this.gridPane = gridPane;
         this.stage = primaryStage;
         this.videoPane = videoPane;
+        this.playAgain = playAgain;
+        
+        playAgain.setDisable(true);
         
         // Media
         clickSound = new MediaPlayer(
@@ -350,6 +354,7 @@ public class MultiplayerGameController implements Runnable {
                         winVideo.play();
                         fadeAnimation(7);
                         colorTiles();
+                        playAgain.setDisable(false);
                     });
                 } 
                 else if (myToken == 'O') {
@@ -359,6 +364,7 @@ public class MultiplayerGameController implements Runnable {
                         loseVideo.play();
                         fadeAnimation(10);
                         colorTiles();
+                        playAgain.setDisable(false);
                     });
                     recieveMove();
                 }
@@ -374,6 +380,7 @@ public class MultiplayerGameController implements Runnable {
                         loseVideo.play();
                         fadeAnimation(10);
                         colorTiles();
+                        playAgain.setDisable(false);
                     });
                     recieveMove();
                 }
@@ -385,6 +392,7 @@ public class MultiplayerGameController implements Runnable {
                         winVideo.play();
                         fadeAnimation(7);
                         colorTiles();
+                        playAgain.setDisable(false);
                     });
                 }
             }
@@ -396,6 +404,7 @@ public class MultiplayerGameController implements Runnable {
                         videoPane.getChildren().add(tieView);
                         tieVideo.play();
                         fadeAnimation(10);
+                        playAgain.setDisable(false);
                 });
                 
                 if (myToken == 'O') {
@@ -412,7 +421,7 @@ public class MultiplayerGameController implements Runnable {
                     alert.initStyle(StageStyle.UNDECORATED);
                     alert.setContentText("The other player has left the game!");
                     Optional<ButtonType> result = alert.showAndWait();
-
+                    playAgain.setDisable(false);
                 });
             }
             
@@ -420,7 +429,7 @@ public class MultiplayerGameController implements Runnable {
                 recieveMove();
                 // Do something to indicate this is my turn
                 Platform.runLater(() -> {
-                        turnLabel.setText("Your turn to play");
+                    turnLabel.setText("Your turn to play");
                 });
                 myTurn = true;
             }
