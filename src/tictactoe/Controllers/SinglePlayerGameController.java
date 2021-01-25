@@ -25,6 +25,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+import tictactoedb.TicTacToeDB;
 
 /**
  *
@@ -165,6 +166,7 @@ public class SinglePlayerGameController {
         if (name2.equals(""))
             playerName2.setText("Player2");  
     }
+    
     public void cellsInit() {
         cells = new Cell[3][3];
         for(int i = 0; i < 3; i++) {
@@ -175,32 +177,34 @@ public class SinglePlayerGameController {
                 cells[i][j].setJ(j);
             }
         }
-        
     }
+    
     public void updateScore() {
         
         player1Score.setText("Score: " + score1);
         player2Score.setText("Score: " + score2);
     }
+    
     public void cellsReset() {
-       // System.out.println("Resetcalled");
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 cells[i][j].resetPlayer();
                 cells[i][j].setStyle("");
             }
         }
+        
         step = 0;
         for(int l = 0; l < numsI.length; l++){
-                     numsI[l]= 0;
-                     numsJ[l] = 0;
-                     playerarr[l] = null;
-                  }
+            numsI[l]= 0;
+            numsJ[l] = 0;
+            playerarr[l] = null;
+        }
         
     }
+    
     public Integer randomNumber(){
-      Random rand = new Random(); 
-      int rand_int1 = rand.nextInt(3); 
+        Random rand = new Random(); 
+        int rand_int1 = rand.nextInt(3); 
         return rand_int1;
     }
     
@@ -238,27 +242,24 @@ public class SinglePlayerGameController {
                // System.out.println(this);
                 getChildren().addAll(l1, l2);
                 turnLabel.setText(name2 + " turn"); 
-                
+
             } 
             else if(player.equals(name2)) {
                 oShape = new Ellipse (this.getWidth() / 2, this.getHeight() / 2,
                 this.getWidth() / 2 - 10, this.getHeight() / 2 - 10);
-               
                 oShape.setFill(null);
                 oShape.setStroke(Color.BLACK);
                 getChildren().add(oShape);
                 turnLabel.setText(name1 + " turn");
-                //System.out.println("It is COmputer turn");
-                }   
-            } 
+            }   
+        } 
 
         public void resetPlayer() {
-          if (player != null) {
-               // System.out.println("Resetplayercalled;");
-                player = null;
-                getChildren().removeAll(l1, l2, oShape);
-                mainPlayer = name1;
-           }
+            if (player != null) {
+                  player = null;
+                  getChildren().removeAll(l1, l2, oShape);
+                  mainPlayer = name1;
+            }
         }
         
         
@@ -266,12 +267,11 @@ public class SinglePlayerGameController {
             
             if(player == null && mainPlayer != null) {
                 setPlayer(mainPlayer);
-               // System.out.println("HIIIIIIIIIIIIIIIIII;");
-                //|| player == ""
                 numsI[step] = i;
                 numsJ[step] = j;
                 playerarr[step] =  new String(mainPlayer);
                 step++;
+                
                 if (hasWon(mainPlayer)) {
                     turnLabel.setText(mainPlayer + " won!");
                     score1++;
@@ -281,80 +281,85 @@ public class SinglePlayerGameController {
                     fadeAnimation(7);
                     colorTiles();
                     mainPlayer = null;
+                    new TicTacToeDB(numsI, numsJ, playerarr, mainPlayer);
                 }
+                
                 else if (isBoardFull()){
                     mainPlayer = null;
                     videoPane.getChildren().add(tieView);
                     tieVideo.play();
                     fadeAnimation(10);
                     turnLabel.setText("It's a draw!");  
+                    new TicTacToeDB(numsI, numsJ, playerarr, "draw");
                 }
             
-            if (mainPlayer != null) {
-                
-                if(difficulty.equals("easy"))
-                {
-                    setEasy();
-                }
-                else if(difficulty.equals("medium")){
-                    setMedium();
-                }
-                else if(difficulty.equals("hard")){
-                    setHard();
-                }
-                
-                if (hasWon(name2)) {
-                    turnLabel.setText(name2 + " won!");
-                    score2++;
-                    updateScore();
-                    colorTiles();
-                    videoPane.getChildren().add(loseView);
-                    loseVideo.play();
-                    fadeAnimation(10);
-                    mainPlayer = null;
-                }
-            }
-            }
-        }
-    }
-     public void setEasy(){
-        
-        int i;
-        int j;
-        do {
-            i = randomNumber();
-            j = randomNumber();
-        } while (cells[i][j].getPlayer() != null);
-        cells[i][j].setPlayer(name2); 
-        numsI[step] = i;
-        numsJ[step] = j;
-        playerarr[step] =  new String(name2);
-        step++;
-     }
-     
-     
-     public void setMedium() {
-        int i= 0,j= 0;
-        long bestScore;
-        bestScore = Long.MIN_VALUE;
-         for (int l = 0; l < 3; l++)
-         {
-            for (int k = 0; k < 3; k++) 
-            {             
-                if(cells[l][k].getPlayer() == null  )
-                {
-                    cells[l][k].setPlayer(name2);
-                   long  score = miniMedium(cells,0, false);
-                    cells[l][k].resetPlayer();
-                    if (score > bestScore)
+                if (mainPlayer != null) {
+
+                    if(difficulty.equals("easy"))
                     {
-                    bestScore = score;
-                    i = l;
-                    j = k;
+                        setEasy();
+                    }
+                    else if(difficulty.equals("medium")){
+                        setMedium();
+                    }
+                    else if(difficulty.equals("hard")){
+                        setHard();
+                    }
+
+                    if (hasWon(name2)) {
+                        turnLabel.setText(name2 + " won!");
+                        score2++;
+                        updateScore();
+                        colorTiles();
+                        videoPane.getChildren().add(loseView);
+                        loseVideo.play();
+                        fadeAnimation(10);
+                        mainPlayer = null;
+                        new TicTacToeDB(numsI, numsJ, playerarr, name2);
                     }
                 }
             }
-         }
+        }
+    }
+    public void setEasy(){
+
+       int i;
+       int j;
+       do {
+           i = randomNumber();
+           j = randomNumber();
+       } while (cells[i][j].getPlayer() != null);
+
+       cells[i][j].setPlayer(name2); 
+       numsI[step] = i;
+       numsJ[step] = j;
+       playerarr[step] =  new String(name2);
+       step++;
+    }
+     
+     
+    public void setMedium() {
+        int i= 0,j= 0;
+        long bestScore;
+        bestScore = Long.MIN_VALUE;
+        for (int l = 0; l < 3; l++)
+        {
+            for (int k = 0; k < 3; k++) 
+            {             
+                if(cells[l][k].getPlayer() == null)
+                {
+                    cells[l][k].setPlayer(name2);
+                    long  score = miniMedium(cells,0, false);
+                    cells[l][k].resetPlayer();
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        i = l;
+                        j = k;
+                    }
+                }
+            }
+        }
         cells[i][j].setPlayer(name2);
         numsI[step] = i;
         numsJ[step] = j;
@@ -364,7 +369,7 @@ public class SinglePlayerGameController {
     }
      
      
-     public long miniMedium(Cell[][] cells,int depth, boolean isMaximizing){
+    public long miniMedium(Cell[][] cells,int depth, boolean isMaximizing) {
         long bestScore;
         long score;
         if(hasWon(name2) ){
@@ -373,92 +378,84 @@ public class SinglePlayerGameController {
         if(hasWon(name1)){
             return -10;
         }
-       if(isBoardFull()){
+        if(isBoardFull()){
             return 0;
-       }
-       if(depth>=3){
-           return 0;
-       }
+        }
+        if(depth>=3){
+            return 0;
+        }
 
         if(isMaximizing)
         {
            bestScore = Long.MIN_VALUE;
          
-        for (int l = 0; l < 3; l++)
-         {
-            
-            for (int k = 0; k < 3 ; k++) 
+            for (int l = 0; l < 3; l++)
             {
-                if(cells[l][k].getPlayer() == null )
+                for (int k = 0; k < 3 ; k++) 
                 {
-                    cells[l][k].setPlayer(name2);
-                    score = miniMedium(cells,depth+1, false);
-                    cells[l][k].resetPlayer();
-                    bestScore = Math.max(score, bestScore);
-                }
+                    if(cells[l][k].getPlayer() == null )
+                    {
+                        cells[l][k].setPlayer(name2);
+                        score = miniMedium(cells,depth+1, false);
+                        cells[l][k].resetPlayer();
+                        bestScore = Math.max(score, bestScore);
+                    }
 
+                }                
             }
-                          
-         }
-       
-          
-          return bestScore;
+
+            return bestScore;
         }
         
-        else{
+        else {
             bestScore = Long.MAX_VALUE;
-          
             for (int l = 0; l < 3; l++)
-         {
-             
-            for (int k = 0; k < 3 ; k++) 
             {
-                if(cells[l][k].getPlayer() == null )
+                for (int k = 0; k < 3 ; k++) 
                 {
-                    cells[l][k].setPlayer(name1);
-                    score = miniMedium(cells,depth+1, true);
-                    cells[l][k].resetPlayer();
-                    bestScore = Math.min(score, bestScore);
+                    if(cells[l][k].getPlayer() == null )
+                    {
+                        cells[l][k].setPlayer(name1);
+                        score = miniMedium(cells,depth+1, true);
+                        cells[l][k].resetPlayer();
+                        bestScore = Math.min(score, bestScore);
+                    }
                 }
             }
             
-         }
-           
-            
-          return bestScore;
-        }  
-        
-       
+             return bestScore;
+        }   
     }
+    
     public void setHard() {
         int i= 0,j= 0;
         long bestScore;
         bestScore = Long.MIN_VALUE;
-         for (int l = 0; l < 3; l++)
-         {
+        for (int l = 0; l < 3; l++)
+        {
             for (int k = 0; k < 3; k++) 
             {             
                 if(cells[l][k].getPlayer() == null  )
                 {
                     cells[l][k].setPlayer(name2);
-                   long  score = minimax(cells,0, false);
+                    long  score = minimax(cells,0, false);
                     cells[l][k].resetPlayer();
                     if (score > bestScore)
                     {
-                    bestScore = score;
-                    i = l;
-                    j = k;
+                        bestScore = score;
+                        i = l;
+                        j = k;
                     }
                 }
             }
-         }
-         cells[i][j].setPlayer(name2);
-         numsI[step] = i;
+        }
+        cells[i][j].setPlayer(name2);
+        numsI[step] = i;
         numsJ[step] = j;
         playerarr[step] =  new String(name2);
         step++;
-
     }
+    
     public long minimax(Cell[][] cells,int depth, boolean isMaximizing){
         long bestScore;
         long score;
@@ -468,59 +465,49 @@ public class SinglePlayerGameController {
         if(hasWon(name1)){
             return -10;
         }
-       if(isBoardFull()){
-            return 0;
-       }
+        if(isBoardFull()){
+             return 0;
+        }
 
-        if(isMaximizing)
-        {
+        if(isMaximizing) {
            bestScore = Long.MIN_VALUE;
          
-        for (int l = 0; l < 3; l++)
-         {
-            
-            for (int k = 0; k < 3 ; k++) 
+            for (int l = 0; l < 3; l++)
             {
-                if(cells[l][k].getPlayer() == null )
+                for (int k = 0; k < 3 ; k++) 
                 {
-                    cells[l][k].setPlayer(name2);
-                    score = minimax(cells,depth+1, false);
-                    cells[l][k].resetPlayer();
-                    bestScore = Math.max(score, bestScore);
-                }
+                    if(cells[l][k].getPlayer() == null )
+                    {
+                        cells[l][k].setPlayer(name2);
+                        score = minimax(cells,depth+1, false);
+                        cells[l][k].resetPlayer();
+                        bestScore = Math.max(score, bestScore);
+                    }
 
+                }              
             }
-                          
-         }
-       
-          
-          return bestScore;
-        }
-        
-        else{
+            
+            return bestScore;
+        } else {
             bestScore = Long.MAX_VALUE;
           
             for (int l = 0; l < 3; l++)
-         {
-             
-            for (int k = 0; k < 3 ; k++) 
             {
-                if(cells[l][k].getPlayer() == null )
+             
+                for (int k = 0; k < 3 ; k++) 
                 {
-                    cells[l][k].setPlayer(name1);
-                    score = minimax(cells,depth+1, true);
-                    cells[l][k].resetPlayer();
-                    bestScore = Math.min(score, bestScore);
-                }
-            }
+                    if(cells[l][k].getPlayer() == null )
+                    {
+                        cells[l][k].setPlayer(name1);
+                        score = minimax(cells,depth+1, true);
+                        cells[l][k].resetPlayer();
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }  
+            } 
             
-         }
-           
-            
-          return bestScore;
-        }  
-        
-       
+            return bestScore;
+        }   
     }
     
     public boolean isBoardFull() {
