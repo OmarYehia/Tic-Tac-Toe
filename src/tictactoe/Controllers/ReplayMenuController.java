@@ -31,7 +31,7 @@ import tictactoedb.TicTacToeDB;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class ReplayMenuController {
     
@@ -71,25 +71,34 @@ public class ReplayMenuController {
         
         selectBtn.setOnAction(e -> {
             if (isDBConnected()) {
-                String selectedMatchString = listView.getSelectionModel().getSelectedItem().toString();
-                int selectedGameID = returnGameID(selectedMatchString, matchIDs);
+                if(listView.getSelectionModel().getSelectedItem() != null) {
+                    String selectedMatchString = listView.getSelectionModel().getSelectedItem().toString();
+                    int selectedGameID = returnGameID(selectedMatchString, matchIDs);
 
-                int[] rowArr = db.getMatchRow(selectedGameID);
-                int[] colArr = db.getMatchColumn(selectedGameID);
-                String[] playerTurns = db.getMatchStepPlayerName(selectedGameID);
-                String secondPlayerName = returnSecondPlayerName(playerTurns, name);
+                    int[] rowArr = db.getMatchRow(selectedGameID);
+                    int[] colArr = db.getMatchColumn(selectedGameID);
+                    String[] playerTurns = db.getMatchStepPlayerName(selectedGameID);
+                    String secondPlayerName = returnSecondPlayerName(playerTurns, name);
 
-                replayGame = new ReplayGameBase(primaryStage,
-                        name,
-                        secondPlayerName,
-                        playerToken,
-                        otherPlayerToken,
-                        rowArr, 
-                        colArr,
-                        playerTurns);
-                Scene scene = new Scene(replayGame, 636, 596);
-                clickSound.play();
-                primaryStage.setScene(scene);
+                    replayGame = new ReplayGameBase(primaryStage,
+                            name,
+                            secondPlayerName,
+                            playerToken,
+                            otherPlayerToken,
+                            rowArr, 
+                            colArr,
+                            playerTurns);
+                    Scene scene = new Scene(replayGame, 636, 596);
+                    clickSound.play();
+                    primaryStage.setScene(scene);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(null);
+                    alert.setHeaderText(null);
+                    alert.initStyle(StageStyle.UNDECORATED);
+                    alert.setContentText("Please select the game that you wish to play back.");
+                    Optional<ButtonType> result = alert.showAndWait();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Lost connected to DB");
@@ -97,10 +106,8 @@ public class ReplayMenuController {
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.setContentText("We're sorry! We lost connection to the DB.");
                 Optional<ButtonType> result = alert.showAndWait();
-            }
-        });
-        
-        
+            } 
+        });         
     }
     
     private String[] listItems(String name, String[] opponents, String[] dates) {

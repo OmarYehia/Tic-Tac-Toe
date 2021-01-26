@@ -22,7 +22,7 @@ import tictactoe.Scenes.TwoPlayersNamesBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public abstract class AnimationHelper {
     public static void fadeAnimate(SinglePlayerLevelsBase base) {

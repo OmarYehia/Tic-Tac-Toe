@@ -17,7 +17,7 @@ import tictactoe.Scenes.MultiplayerGameBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class MultiPlayerNameController {
     

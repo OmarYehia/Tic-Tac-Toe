@@ -17,6 +17,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.ReplayMenuController;
 
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class ReplayMenuBase extends StackPane {
 
     protected final AnchorPane anchorPane;

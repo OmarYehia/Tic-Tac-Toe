@@ -15,7 +15,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.MainMenuController;
 
-
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class MainMenuBase extends StackPane {
 
     protected final AnchorPane anchorPane;

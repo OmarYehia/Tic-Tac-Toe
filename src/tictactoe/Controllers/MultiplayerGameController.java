@@ -10,7 +10,7 @@ import helpers.NetworkConfig;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
+
 import java.net.Socket;
 import java.util.Optional;
 import javafx.animation.KeyFrame;
@@ -39,7 +39,7 @@ import tictactoe.Scenes.MultiplayerGameBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class MultiplayerGameController implements Runnable {
     
@@ -146,7 +146,9 @@ public class MultiplayerGameController implements Runnable {
         
         playAgain.setOnAction(e -> {
             try {
-                socket.close();
+                if(socket != null){
+                    socket.close();
+                }
                 MultiplayerGameBase multiGame = new MultiplayerGameBase(primaryStage, myName);
                 Scene scene = new Scene(multiGame, 636, 596);
                 winVideo.stop();
@@ -164,7 +166,9 @@ public class MultiplayerGameController implements Runnable {
         
         mainMenu.setOnAction(e -> {
             try{
-                socket.close();
+                if(socket != null){
+                    socket.close();
+                }
                 mainMenuBase = new MainMenuBase(primaryStage);
                 Scene scene = new Scene(mainMenuBase, 636, 596);
                 winVideo.stop();
@@ -199,21 +203,12 @@ public class MultiplayerGameController implements Runnable {
         } catch (IOException e) {
             System.out.println("Server is currently unavailable");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            turnLabel.setText("Server is down");
             alert.setTitle("Server unavailable");
             alert.setHeaderText(null);
             alert.initStyle(StageStyle.UNDECORATED);
             alert.setContentText("The server is currently down. Please try again later.");
-            ButtonType mainMenu = new ButtonType("Main Menu");
-            alert.getButtonTypes().setAll(mainMenu);
-            Optional<ButtonType> result = alert.showAndWait();
-            
-            if (result.get() == mainMenu) {
-                mainMenuBase = new MainMenuBase(stage);
-                Scene scene = new Scene(mainMenuBase, 636, 596);
-                AnimationHelper.fadeAnimate(mainMenuBase);
-                clickSound.play();
-                stage.setScene(scene);
-            }
+            alert.showAndWait();
         }       
     }
 

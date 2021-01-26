@@ -14,7 +14,7 @@ import java.net.Socket;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class ServerHandler implements Runnable {
     private final int PLAYER1 = 1;

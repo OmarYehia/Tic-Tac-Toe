@@ -14,6 +14,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.TwoPlayerGameController;
 
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class TwoPlayerGameBase extends AnchorPane {
 
     protected final Rectangle rectangle;

@@ -15,7 +15,7 @@ import server.scenes.ServerBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class Server extends Application {
     

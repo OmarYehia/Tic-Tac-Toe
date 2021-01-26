@@ -14,6 +14,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class ServerBase extends StackPane {
 
     protected final AnchorPane anchorPane;

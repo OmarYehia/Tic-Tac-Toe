@@ -18,7 +18,7 @@ import tictactoe.Scenes.TwoPlayerGameBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class TwoPlayersNamesController {
     

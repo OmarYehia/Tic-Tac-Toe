@@ -15,6 +15,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.TwoPlayersNamesController;
 
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class TwoPlayersNamesBase extends StackPane {
 
     protected final AnchorPane anchorPane;

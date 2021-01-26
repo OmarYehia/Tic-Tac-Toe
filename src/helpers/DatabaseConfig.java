@@ -7,10 +7,11 @@ package helpers;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public abstract class DatabaseConfig {
-    public static final String DB_URL = "jdbc:mysql://localhost:3306/tictactoe";
-    public static final String DB_USERNAME = "root";
-    public static final String DB_PASSWORD = "4994";
+    public static final String DB_URL = "jdbc:mysql://localhost:3306/";
+    public static final String DB_NAME = "tictactoe";
+    public static final String DB_USERNAME = "XXX";
+    public static final String DB_PASSWORD = "XXX";
 }

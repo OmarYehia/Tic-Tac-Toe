@@ -26,7 +26,7 @@ import tictactoedb.TicTacToeDB;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class ReplayNameController {
     

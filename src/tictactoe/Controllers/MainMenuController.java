@@ -7,9 +7,6 @@ package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
 import helpers.DatabaseConfig;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,6 +29,11 @@ import tictactoe.Scenes.ReplayNameBase;
 import tictactoe.Scenes.SinglePlayerLevelsBase;
 import tictactoe.Scenes.TwoPlayersNamesBase;
 
+
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class MainMenuController {
     private MultiplayerNameBase multiplayerNameScene;
     private TwoPlayersNamesBase namesScene;

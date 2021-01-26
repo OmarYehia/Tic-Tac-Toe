@@ -28,7 +28,7 @@ import tictactoe.Scenes.ReplayMenuBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class ReplayGameController implements Runnable{
     

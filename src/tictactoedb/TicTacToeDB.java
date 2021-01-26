@@ -55,8 +55,10 @@ public class TicTacToeDB {
         }
 
         //****Add players****//
+        
         addNewPlayer(player1);
         addNewPlayer(player2);
+        
 
         //****Add new game****//        
         if (player2.toLowerCase().equals("computer")) {
@@ -133,7 +135,7 @@ public class TicTacToeDB {
             int playerID = getPlayerID(playerName);
             PreparedStatement getOpponentsID
                     = con.prepareStatement("SELECT game_id,player1_id,player2_id "
-                            + "FROM tictactoe.game WHERE player1_id = ? OR player2_id = ?;");
+                            + "FROM game WHERE player1_id = ? OR player2_id = ?;");
             getOpponentsID.setInt(1, playerID);
             getOpponentsID.setInt(2, playerID);
             rs = getOpponentsID.executeQuery();
@@ -393,7 +395,7 @@ public class TicTacToeDB {
         ResultSet rs = null;
         try {
             PreparedStatement getStepPlayerName
-                    = con.prepareStatement("SELECT name " + "FROM tictactoe.steps,player " + 
+                    = con.prepareStatement("SELECT name " + "FROM steps,player " + 
                             "WHERE player_id = id && game_id = ?;");
             getStepPlayerName.setInt(1, game_id);
             rs = getStepPlayerName.executeQuery();
@@ -430,7 +432,7 @@ public class TicTacToeDB {
             for (int x = 0; x < i.length; x++) {
                 int playerID = getPlayerID(playerName[x]);
                 PreparedStatement getLastGameID
-                        = con.prepareStatement("SELECT game_id FROM tictactoe.game ORDER BY game_id DESC LIMIT 1;");
+                        = con.prepareStatement("SELECT game_id FROM game ORDER BY game_id DESC LIMIT 1;");
                 rs = getLastGameID.executeQuery();
                 rs.next();
                 int gameID = rs.getInt(1);
@@ -539,7 +541,7 @@ public class TicTacToeDB {
             
             // Inserting Game Data
             PreparedStatement pst = con.prepareStatement("insert into game "
-                    + "(player1_id, player2_id,game_date,result) values (?,0,?,?) ");
+                    + "(player1_id, player2_id,game_date,result) values (?,2,?,?) ");
             pst.setInt(1, player1_id);
             pst.setString(2, strDate);
             pst.setString(3, result);
@@ -598,7 +600,44 @@ public class TicTacToeDB {
     public void openCon() {
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            con = DriverManager.getConnection(DatabaseConfig.DB_URL, DatabaseConfig.DB_USERNAME, DatabaseConfig.DB_PASSWORD);
+            con = DriverManager.getConnection(DatabaseConfig.DB_URL + DatabaseConfig.DB_NAME + "?createDatabaseIfNotExist=true",
+                    DatabaseConfig.DB_USERNAME,
+                    DatabaseConfig.DB_PASSWORD);
+            PreparedStatement createPlayerTable = con.prepareStatement("CREATE TABLE IF NOT EXISTS player (" +
+                " `id` int(10) NOT NULL AUTO_INCREMENT, " +
+                " `name` varchar(45) NOT NULL, " +
+                " `score` int(11) NOT NULL, " +
+                " PRIMARY KEY (`id`)," +
+                " UNIQUE KEY `id_UNIQUE` (`id`)" +
+                " ) " );
+            createPlayerTable.executeUpdate();
+            PreparedStatement createGameTable = con.prepareStatement("CREATE TABLE IF NOT EXISTS game (" +
+                    "  `game_id` int(11) NOT NULL AUTO_INCREMENT," +
+                    "  `player1_id` int(10) DEFAULT NULL," +
+                    "  `player2_id` int(10) DEFAULT NULL," +
+                    "  `game_date` date DEFAULT NULL," +
+                    "  `result` varchar(45) DEFAULT NULL," +
+                    "  PRIMARY KEY (`game_id`)," +
+                    "  KEY `player1_id_fk` (`player1_id`)," +
+                    "  KEY `player2_id_fk` (`player2_id`)," +
+                    "  CONSTRAINT `player1_id_fk` FOREIGN KEY (`player1_id`) REFERENCES `player` (`id`)," +
+                    "  CONSTRAINT `player2_id_fk` FOREIGN KEY (`player2_id`) REFERENCES `player` (`id`)" +
+                    ") ");
+            createGameTable.executeUpdate();
+            PreparedStatement createStepsTable = con.prepareStatement("CREATE TABLE IF NOT EXISTS steps (" +
+                    "`step_id` int(11) NOT NULL AUTO_INCREMENT," +
+                    "`game_id` int(11) NOT NULL," +
+                    "`place_i` int(1) NOT NULL," +
+                    "`place_j` int(1) NOT NULL," +
+                    "`player_id` int(10) NOT NULL," +
+                    "PRIMARY KEY (`step_id`,`game_id`)," +
+                    "UNIQUE KEY `step_id_UNIQUE` (`step_id`)," +
+                    "KEY `game_id_idx` (`game_id`)," +
+                    "KEY `id_idx` (`player_id`)," +
+                    "CONSTRAINT `game_id` FOREIGN KEY (`game_id`) REFERENCES `game` (`game_id`)," +
+                    "CONSTRAINT `id` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)" +
+                    ")");
+            createStepsTable.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

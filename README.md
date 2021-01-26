@@ -63,7 +63,7 @@ java -version
     - [Install MySQL on Linux](https://docs.rackspace.com/support/how-to/install-mysql-server-on-the-ubuntu-operating-system/)
     - [Install MySQL on Windows](https://www.liquidweb.com/kb/install-mysql-windows/)
 
-3. After installing MySQL you can import the database using the `TicTacToeSQL.sql `file in the SQL directory or download from [this SQL file.](https://drive.google.com/file/d/1oQ0jXTxygBVLUtrKxozrg9yTnZgcu9yY/view?usp=sharing)
+3. After installing MySQL you can run the program directly and a database will be created for you under the name of `tictactoe` or if you encounter an error you can import the database using the `TicTacToeSQL.sql `file in the SQL directory or download from [this SQL file.](https://drive.google.com/file/d/1oQ0jXTxygBVLUtrKxozrg9yTnZgcu9yY/view?usp=sharing)
     - For more information on how to import database you can visit [this link](https://stackoverflow.com/questions/15884693/how-can-i-import-data-into-mysql-database-via-mysql-workbench).
 
 #### <b>Configuarations</b>
@@ -76,7 +76,10 @@ public static final int PORT_NUMBER = 1234;
 2. To configure the database go to `src/helpers/DatabaseConfig.java`
 ```java
 // This is the URL for the database, replace the "tictactoe" with the name you gave your schema
-public static final String DB_URL = "jdbc:mysql://localhost:3306/tictactoe";
+public static final String DB_URL = "jdbc:mysql://localhost:3306/";
+
+// Insert your databasename
+public static final String DB_NAME = "tictactoe";
 
 // Insert your MySQL database username
 public static final String DB_USERNAME = "XXX";
@@ -85,8 +88,6 @@ public static final String DB_USERNAME = "XXX";
 public static final String DB_PASSWORD = "XXX";
 ```
 <b>Congratulations you are now ready to play the game using the JAR files!</b>
--
-<br>
 
 
 #### <b>Running the game</b>

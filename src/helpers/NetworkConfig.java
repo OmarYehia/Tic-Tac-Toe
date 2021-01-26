@@ -8,7 +8,7 @@ package helpers;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public abstract class NetworkConfig {
     

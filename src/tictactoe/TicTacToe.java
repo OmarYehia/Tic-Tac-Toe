@@ -16,7 +16,7 @@ import tictactoe.Scenes.MainMenuBase;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class TicTacToe extends Application {
     

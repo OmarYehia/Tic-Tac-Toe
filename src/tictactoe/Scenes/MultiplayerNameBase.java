@@ -1,6 +1,5 @@
 package tictactoe.Scenes;
 
-import java.net.Socket;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,6 +15,11 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.MultiPlayerNameController;
 
+
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class MultiplayerNameBase extends StackPane {
 
     protected final AnchorPane anchorPane;

@@ -12,7 +12,7 @@ import server.ServerHandler;
 
 /**
  *
- * @author LENOVO
+ * @author OMAR YEHIA
  */
 public class ServerBaseController {
     private ServerHandler server;

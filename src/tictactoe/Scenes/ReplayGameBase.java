@@ -14,6 +14,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tictactoe.Controllers.ReplayGameController;
 
+/**
+ *
+ * @author OMAR YEHIA
+ */
 public class ReplayGameBase extends AnchorPane {
 
     protected final Rectangle rectangle;
