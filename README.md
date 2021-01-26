@@ -85,8 +85,7 @@ public static final String DB_USERNAME = "XXX";
 public static final String DB_PASSWORD = "XXX";
 ```
 <b>Congratulations you are now ready to play the game using the JAR files!</b>
--
-<br>
+
 
 
 #### <b>Running the game</b>
