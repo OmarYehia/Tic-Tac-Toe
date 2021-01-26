@@ -6,6 +6,7 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
+import helpers.NetworkConfig;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -42,7 +43,6 @@ import tictactoe.Scenes.MultiplayerGameBase;
  */
 public class MultiplayerGameController implements Runnable {
     
-    private final int PORT_NUMBER = 1234;
     private final int PLAYER1 = 1;
     private final int PLAYER2 = 2;
     private final int PLAYER1_WON = 1;
@@ -191,7 +191,7 @@ public class MultiplayerGameController implements Runnable {
     
     private void connectToServer() {
         try {
-            socket = new Socket(InetAddress.getLocalHost(), PORT_NUMBER);
+            socket = new Socket(NetworkConfig.SERVER_HOST_IP, NetworkConfig.PORT_NUMBER);
             fromServer = new DataInputStream(socket.getInputStream());
             toServer = new DataOutputStream(socket.getOutputStream());
             Thread th = new Thread(this);

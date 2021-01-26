@@ -5,7 +5,7 @@
  */
 package tictactoe.Controllers;
 
-import helpers.DatabaseHelper;
+import helpers.DatabaseConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -138,7 +138,7 @@ public class ReplayMenuController {
         boolean connected = false;
         try {
                 DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-                Connection con = DriverManager.getConnection(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword);
+                Connection con = DriverManager.getConnection(DatabaseConfig.DB_URL, DatabaseConfig.DB_USERNAME, DatabaseConfig.DB_PASSWORD);
                 con.close();
                 connected = true;
         } catch (SQLException ex) {

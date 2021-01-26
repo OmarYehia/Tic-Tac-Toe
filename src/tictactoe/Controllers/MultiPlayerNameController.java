@@ -6,7 +6,6 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
-import java.net.Socket;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -26,8 +25,6 @@ public class MultiPlayerNameController {
     private MainMenuBase mainMenu;
     private MultiplayerGameBase multiGame;
     private MediaPlayer clickSound;
-    private final int PORT_NUMBER = 1234;
-//    private boolean isServerConnected;
     
 
     public MultiPlayerNameController(

@@ -6,7 +6,7 @@
 package tictactoe.Controllers;
 
 import helpers.AnimationHelper;
-import helpers.DatabaseHelper;
+import helpers.DatabaseConfig;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -101,7 +101,7 @@ public class MainMenuController {
         });
         
         replayBtn.setOnAction(e -> {
-            if(isDBConnected(DatabaseHelper.dbURL, DatabaseHelper.dbUsername, DatabaseHelper.dbPassword)){
+            if(isDBConnected(DatabaseConfig.DB_URL, DatabaseConfig.DB_USERNAME, DatabaseConfig.DB_PASSWORD)){
                 replayNameScene = new ReplayNameBase(primaryStage);
                 Scene scene = new Scene(replayNameScene,636, 596);
                 AnimationHelper.fadeAnimate(replayNameScene);
