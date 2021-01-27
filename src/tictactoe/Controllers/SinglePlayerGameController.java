@@ -92,7 +92,7 @@ public class SinglePlayerGameController {
         this.playerName2 = computer;
         this.turnLabel = turnLabel;
         this.name1 = name;
-        this.name2 = "Computer";
+        this.name2 = "computer";
         this.gridPane = gridPane;
         this.videoPane = videoPane;
         this.player1Score = player1Score;
